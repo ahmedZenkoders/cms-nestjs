@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsString, IsStrongPassword } from "class-validator";
 
-export class CreateTeacherDto {
+export class CreateAdminDto {
     @IsString()
     @IsNotEmpty()
     userName: string;
@@ -10,12 +10,12 @@ export class CreateTeacherDto {
     @IsNotEmpty()
     email: string;
 
+    @IsStrongPassword()
     @IsNotEmpty()
-    @IsString()
     password: string
 
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     contact: string;
 
     @IsNotEmpty()

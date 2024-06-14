@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { Entity, PrimaryColumn, Column } from "typeorm"
 
-@Entity({ name: "students" })
-export class Student {
+@Entity({ name: "admin" })
+export class Admin {
     @PrimaryColumn()
     email: string
 
@@ -27,12 +27,9 @@ export class Student {
     @Column({ type: 'timestamp' })
     updated_at: Date
 
-    @Column({default:"false"})
-    is_suspended: boolean
-
-    @Column({default:"false"})
+    @Column({ default: "true" })
     is_verified: boolean
 
-    @Column({default:"student"})
-    role:string
+    @Column({ default: "admin" })
+    role: string
 }

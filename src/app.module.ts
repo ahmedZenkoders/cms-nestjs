@@ -8,6 +8,9 @@ import { StudentsModule } from './students/students.module';
 import { Student } from './students/entities/student';
 import { TeachersModule } from './teachers/teachers.module';
 import { Teacher } from './teachers/entities/teacher';
+import { AdminModule } from './admin/admin.module';
+import { Admin } from './admin/entities/admin';
+import { DomainModule } from './domain/domain.module';
 
 @Module({
   imports: [
@@ -18,13 +21,15 @@ import { Teacher } from './teachers/entities/teacher';
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
-      entities: [Student, Teacher],
+      entities: [Student, Teacher,Admin],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Student, Teacher]),
+    TypeOrmModule.forFeature([Student, Teacher,Admin]),
     AuthModule,
     StudentsModule,
     TeachersModule,
+    AdminModule,
+    DomainModule,
   ],
   controllers: [AppController],
   providers: [AppService],

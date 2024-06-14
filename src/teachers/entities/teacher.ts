@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryColumn, Column } from "typeorm"
 
 @Entity({ name: "teachers" })
 export class Teacher {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     email: string
 
     @Column()
-    userName: string
+    username: string
 
     @Column()
     password: string
@@ -16,21 +16,21 @@ export class Teacher {
     address: string
 
     @Column()
-    contact: number
+    contact: string
 
     @Column()
     age: number
 
     @Column({ type: 'timestamp' })
-    created_at: string
+    created_at: Date
 
     @Column({ type: 'timestamp' })
-    updated_at: string
+    updated_at: Date
 
-    @Column()
+    @Column({default:"false"})
     is_suspended: boolean
 
-    @Column()
+    @Column({default:"false"})
     is_verified: boolean
 
     @Column({default:"teacher"})
