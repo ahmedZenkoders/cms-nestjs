@@ -7,11 +7,12 @@ import { Teacher } from 'src/teachers/entities/teacher';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginStudentDto } from 'src/students/dto/loginStudent.dto';
-import { CreateTeacherDto } from 'src/teachers/dto/createTeacher';
+import { CreateTeacherDto } from 'src/teachers/dto/createTeacher.dto';
 import { LoginTeacherDto } from 'src/teachers/dto/loginTeacher.dto';
 import { Admin } from 'src/admin/entities/admin';
 import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,16 @@ export class AuthService {
         private studentRepository: Repository<Student>,
         @InjectRepository(Admin)
         private adminRepository: Repository<Admin>,
+
+        private jwtService: JwtService
     ) { }
+    private async generateToken(user: any) {
+        const payload = { username: user.username, sub: user.email };
+        return {
+            access_token: this.jwtService.sign(payload),
+
+        };
+    }
 
     async studentSignUp(createstudentdto: CreateStudentDto) {
         const existingUser = await this.studentRepository.findOneBy({
@@ -43,7 +53,7 @@ export class AuthService {
             updated_at: new Date(Date.now()),
         });
         this.studentRepository.save(user);
-        return user;
+        return this.generateToken(user);
     }
 
     async studentLogin(loginstudentdto: LoginStudentDto) {
@@ -57,7 +67,7 @@ export class AuthService {
         if (!isMatch) {
             throw new UnauthorizedException("Invalid Password")
         }
-        return user;
+        return this.generateToken(user);
     }
 
     async teacherSignUp(createteacherdto: CreateTeacherDto) {
@@ -78,7 +88,7 @@ export class AuthService {
             updated_at: new Date(Date.now()),
         });
         this.teacherRepository.save(user);
-        return user;
+        return this.generateToken(user);
     }
     async teacherLogin(loginteacherdto: LoginTeacherDto) {
         const user = await this.teacherRepository.findOneBy({
@@ -91,7 +101,7 @@ export class AuthService {
         if (!isMatch) {
             throw new UnauthorizedException("Invalid Password")
         }
-        return user;
+        return this.generateToken(user);
     }
     async adminSignUp(createadmindto: CreateAdminDto) {
         const existingUser = await this.adminRepository.findOneBy({
@@ -111,7 +121,7 @@ export class AuthService {
             updated_at: new Date(Date.now()),
         });
         this.adminRepository.save(user);
-        return user;
+        return this.generateToken(user);
     }
     async adminLogin(loginadmindto: LoginAdminDto) {
         const user = await this.adminRepository.findOneBy({
@@ -124,7 +134,7 @@ export class AuthService {
         if (!isMatch) {
             throw new UnauthorizedException("Invalid Password")
         }
-        return user;
+        return this.generateToken(user);
     }
 }
 

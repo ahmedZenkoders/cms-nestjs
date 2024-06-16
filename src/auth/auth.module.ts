@@ -6,10 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Student } from 'src/students/entities/student';
 import { Teacher } from 'src/teachers/entities/teacher';
 import { Admin } from 'src/admin/entities/admin';
+import { DomainService } from 'src/domain/domain.service';
+import { Domain } from 'src/domain/entities/domain';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Student,Teacher,Admin])],
-  providers: [AuthService],
+  imports:[TypeOrmModule.forFeature([Student,Teacher,Admin,Domain]),
+],
+  providers: [AuthService,DomainService],
   controllers: [AuthController]
 })
 export class AuthModule {}

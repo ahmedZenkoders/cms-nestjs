@@ -1,26 +1,26 @@
 /* eslint-disable prettier/prettier */
-import { IsEmail, IsNotEmpty, IsNumber, IsString, IsStrongPassword } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 
 export class CreateStudentDto {
-    @IsString()
-    @IsNotEmpty()
-    userName: string;
-
-    @IsEmail()
-    @IsNotEmpty()
+    @IsEmail({}, { message: 'Invalid email address' })
+    @IsNotEmpty({ message: 'Email is required' })
     email: string;
-
-    @IsStrongPassword()
-    @IsNotEmpty()
-    password: string
+  
+    @IsNotEmpty({ message: 'Password is required' })
+    @Length(6, 20, { message: 'Password must be between 6 and 20 characters' })
+    password: string;
+  
+    @IsNotEmpty({ message: 'Name is required' })
+    username: string;
 
     @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Contact is required' })
     contact: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Age is required' })
     @IsNumber()
     age: number;
 
-
+    @IsNotEmpty({ message: 'Address is required' })
+    address:string
 }

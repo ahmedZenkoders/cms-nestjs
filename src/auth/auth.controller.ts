@@ -1,17 +1,19 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, HttpCode, HttpStatus, Injectable, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Injectable, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateStudentDto } from 'src/students/dto/createStudent.dto';
 import { LoginStudentDto } from 'src/students/dto/loginStudent.dto';
-import { CreateTeacherDto } from 'src/teachers/dto/createTeacher';
+import { CreateTeacherDto } from 'src/teachers/dto/createTeacher.dto';
 import { LoginTeacherDto } from 'src/teachers/dto/loginTeacher.dto';
 import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
+import { EmailDomainGuard } from 'src/guards/email.guard';
 
 @Injectable()
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) { }
+    @UseGuards(EmailDomainGuard)
     @Post('/studentsignup')
     async createStudent(@Body() createstudentdto: CreateStudentDto ) {
         const user=this.authService.studentSignUp(createstudentdto)
@@ -25,6 +27,7 @@ export class AuthController {
         HttpCode(HttpStatus.OK);
         return user
     }
+    @UseGuards(EmailDomainGuard)
     @Post('/teachersignup')
     async createTeacher(@Body() createteacherdto: CreateTeacherDto) {
         const user = this.authService.teacherSignUp(createteacherdto)
@@ -37,6 +40,7 @@ export class AuthController {
         HttpCode(HttpStatus.OK);
         return user
     }
+    @UseGuards(EmailDomainGuard)
     @Post('/adminsignup')
     async createAdmin(@Body() createadmindto: CreateAdminDto) {
         const user = this.authService.adminSignUp(createadmindto)

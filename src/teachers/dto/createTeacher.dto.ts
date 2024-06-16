@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { IsEmail, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 
-export class CreateAdminDto {
+export class CreateTeacherDto {
     @IsEmail({}, { message: 'Invalid email address' })
     @IsNotEmpty({ message: 'Email is required' })
     email: string;

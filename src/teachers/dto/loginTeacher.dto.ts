@@ -3,10 +3,10 @@ import { IsString, IsEmail, IsNotEmpty } from "class-validator";
 
 export class LoginTeacherDto {
     @IsEmail()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Email is required' })
     email: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Password is required' })
     @IsString()
     password: string
 }
