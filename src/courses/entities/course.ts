@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { Entity, PrimaryColumn, Column } from "typeorm"
 
-@Entity({ name: "students" })
-export class Student {
+@Entity({ name: "courses" })
+export class Course {
     @PrimaryColumn()
     coursecode: string
 

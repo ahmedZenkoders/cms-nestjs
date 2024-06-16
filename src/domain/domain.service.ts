@@ -11,7 +11,7 @@ export class DomainService {
     private domainRepository: Repository<Domain>,
   ) {}
 
-  async getAllowedDomains(): Promise<string[]> {
+  async getAllowedDomains() {
     const domains = await this.domainRepository.find();
     return domains.map(domain => domain.name);
   }
@@ -24,7 +24,7 @@ export class DomainService {
   
       const domain = await this.domainRepository.create({ name: createdomaindto.name });
       await this.domainRepository.save(domain);
-      return { message: `Domain created: ${createdomaindto.name}` };
+      return { message: `${createdomaindto.name} domain is created: ` };
     }
 
   async removeAllowedDomain(createdomaindto:CreateDomainDto){

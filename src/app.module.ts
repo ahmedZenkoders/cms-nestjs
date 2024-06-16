@@ -17,6 +17,8 @@ import { EmailDomainGuard } from './guards/email.guard';
 import { DomainService } from './domain/domain.service';
 import { DomainModule } from './domain/domain.module';
 import { Domain } from './domain/entities/domain';
+import { Course } from './courses/entities/course';
+import { CourseService } from './courses/courses.service';
 
 
 @Module({
@@ -28,7 +30,7 @@ import { Domain } from './domain/entities/domain';
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
-      entities: [Student, Teacher,Admin,Domain],
+      entities: [Student, Teacher,Admin,Domain,Course],
       synchronize: true,
     }),
     JwtModule.register({
@@ -36,7 +38,7 @@ import { Domain } from './domain/entities/domain';
       secret: 'mysecretkey',
       signOptions: { expiresIn: '1h' },
     }),
-    TypeOrmModule.forFeature([Student, Teacher,Admin,Domain]),
+    TypeOrmModule.forFeature([Student, Teacher,Admin,Domain,Course]),
     AuthModule,
     StudentsModule,
     TeachersModule,
@@ -45,6 +47,6 @@ import { Domain } from './domain/entities/domain';
     DomainModule,
   ],
   controllers: [AdminController],
-  providers: [DomainService, EmailDomainGuard],
+  providers: [DomainService, EmailDomainGuard,CourseService],
 })
 export class AppModule { }
