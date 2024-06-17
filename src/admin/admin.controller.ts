@@ -1,10 +1,14 @@
-import { Controller, Post, Body, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, HttpCode, UseGuards } from '@nestjs/common';
 import { CourseService } from 'src/courses/courses.service';
 import { CreateCourseDto } from 'src/courses/dto/createCourse.dto';
 import { RemoveCourseDto } from 'src/courses/dto/removeCourse.dto';
+import { Roles } from 'src/decorator/role.decorator';
 import { DomainService } from 'src/domain/domain.service';
 import { CreateDomainDto } from 'src/domain/dto/createDomain.dto';
+import { RolesGuard } from 'src/guards/role.guard';
 
+@UseGuards(RolesGuard)
+@Roles(['admin'])
 @Controller('admin')
 export class AdminController {
     constructor(private readonly domainService: DomainService,
