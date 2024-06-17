@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,6 +19,10 @@ import { DomainModule } from './domain/domain.module';
 import { Domain } from './domain/entities/domain';
 import { Course } from './courses/entities/course';
 import { CourseService } from './courses/courses.service';
+import { UploadService } from './upload/upload.service';
+import { UploadController } from './upload/upload.controller';
+import { UploadModule } from './upload/upload.module';
+import { json, urlencoded } from 'body-parser';
 
 
 @Module({
@@ -30,7 +34,7 @@ import { CourseService } from './courses/courses.service';
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
-      entities: [Student, Teacher,Admin,Domain,Course],
+      entities: [Student,Teacher,Admin,Domain,Course],
       synchronize: true,
     }),
     JwtModule.register({
@@ -38,15 +42,22 @@ import { CourseService } from './courses/courses.service';
       secret: 'mysecretkey',
       signOptions: { expiresIn: '1h' },
     }),
-    TypeOrmModule.forFeature([Student, Teacher,Admin,Domain,Course]),
+    TypeOrmModule.forFeature([Student,Teacher,Admin,Domain,Course]),
     AuthModule,
     StudentsModule,
     TeachersModule,
     AdminModule,
     CoursesModule,
     DomainModule,
+    UploadModule,
   ],
-  controllers: [AdminController],
-  providers: [DomainService, EmailDomainGuard,CourseService],
+  controllers: [AdminController, UploadController],
+  providers: [DomainService, EmailDomainGuard,CourseService, UploadService],
 })
-export class AppModule { }
+export class AppModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer
+  //     .apply(json({ limit: '50mb' }), urlencoded({ extended: true, limit: '50mb' }))
+  //     .forRoutes({ path: '*', method: RequestMethod.ALL });
+  // }
+ }

@@ -13,6 +13,10 @@ export class CreateStudentDto {
     @IsNotEmpty({ message: 'Name is required' })
     username: string;
 
+    // @IsNotEmpty({message:"Image is required"})
+    // @IsString()
+    // image:string;
+
     @IsString()
     @IsNotEmpty({ message: 'Contact is required' })
     contact: string;

@@ -25,12 +25,13 @@ export class AuthService {
         @InjectRepository(Admin)
         private adminRepository: Repository<Admin>,
 
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        // private readonly uploadservice: UploadService,
     ) { }
     private async generateToken(user: any) {
         const payload = { username: user.username, sub: user.email };
         return {
-            data:user,
+            data: user,
             access_token: this.jwtService.sign(payload),
 
         };
@@ -82,9 +83,14 @@ export class AuthService {
             );
         }
         const hashedPassword = await bcrypt.hash(createteacherdto.password, 10);
+        // let profilePictureUrl: string;
+        // if (file) {
+        //     profilePictureUrl = await this.uploadservice.uploadImage(file);
+        // }
         const user = this.teacherRepository.create({
             ...createteacherdto,
             password: hashedPassword,
+            // image: profilePictureUrl || null,
             created_at: new Date(Date.now()),
             updated_at: new Date(Date.now()),
         });

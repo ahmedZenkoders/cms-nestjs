@@ -21,6 +21,9 @@ export class Teacher {
     @Column()
     age: number
 
+    // @Column({nullable:false})
+    // image:string
+
     @Column({ type: 'timestamp' })
     created_at: Date
 
