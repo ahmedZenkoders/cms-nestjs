@@ -1,37 +1,39 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable, ExecutionContext, UnauthorizedException, CanActivate } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { AuthGuard } from "@nestjs/passport";
+import { Observable } from "rxjs";
+import { jwtConstant } from "src/auth/constants";
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private jwtService: JwtService) {
-    super();
-  }
+export class JwtAuthGuard implements CanActivate{
+  
+constructor(private readonly jwtService:JwtService){}
+  canActivate(context: ExecutionContext):boolean | Promise<boolean> | Observable<boolean> {
+    try {
+      console.log("Inside jwt guard")
+      const request = context.switchToHttp().getRequest();
+    const token = request.headers.authorization.split(" ")[1]
 
-  canActivate(context: ExecutionContext) {
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    console.log(token)
     
     if (!token) {
       throw new UnauthorizedException('Token not found');
     }
 
-    try {
-      const payload = this.jwtService.verify(token);
-      request.user = payload;
-    } catch {
-      throw new UnauthorizedException('Invalid token');
+  
+      const payload = this.jwtService.verify(token,{secret:jwtConstant.secret});
+      console.log(payload)
+      request.user = payload; 
+      console.log(request.user)
+      
+      return true;
+    } catch (error) {
+      console.log(error)
+     throw new UnauthorizedException(error.message)
     }
+    
 
-    return true;
   }
 
-  private extractTokenFromHeader(request: any): string | null {
-    const authHeader = request.headers.authorization;
-    if (!authHeader) {
-      return null;
-    }
-    const [type, token] = authHeader.split(' ');
-    return type === 'Bearer' ? token : null;
-  }
+  
 }

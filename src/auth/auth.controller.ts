@@ -9,6 +9,7 @@ import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
 import { EmailDomainGuard } from 'src/guards/email.guard';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Injectable()
 @Controller('auth')
@@ -21,7 +22,7 @@ export class AuthController {
         HttpCode(HttpStatus.CREATED);
         return user
     }
-
+    @UseGuards(JwtAuthGuard)
     @Post('studentlogin')
     async loginStudent(@Body() loginStudentdto: LoginStudentDto) {
         const user = this.authService.studentLogin(loginStudentdto)
@@ -31,18 +32,18 @@ export class AuthController {
 
 
     @UseGuards(EmailDomainGuard)
-    // @UseInterceptors(FileInterceptor('profilePicture'))
+    @UseInterceptors(FileInterceptor('file'))
     @Post('teachersignup')
-    async createTeacher(@Body() createteacherdto: CreateTeacherDto) {
-        const user = this.authService.teacherSignUp(createteacherdto);
+    async createTeacher(@Body() createteacherdto: CreateTeacherDto ,@UploadedFile() file:Express.Multer.File) {
+        const user = this.authService.teacherSignUp(createteacherdto,file);
         HttpCode(HttpStatus.CREATED);
         return user
     }
 
-
+    @UseGuards(JwtAuthGuard)
     @Post('teacherlogin')
     async loginTeacher(@Body() loginteacherdto: LoginTeacherDto) {
-        const user = this.authService.teacherLogin(loginteacherdto)
+        const user = await this.authService.teacherLogin(loginteacherdto)
         HttpCode(HttpStatus.OK);
         return user
     }
@@ -53,6 +54,7 @@ export class AuthController {
         HttpCode(HttpStatus.CREATED);
         return user
     }
+    @UseGuards(JwtAuthGuard) 
     @Post('adminlogin')
     async loginAdmin(@Body() loginadmindto: LoginAdminDto) {
         const user = this.authService.adminLogin(loginadmindto)

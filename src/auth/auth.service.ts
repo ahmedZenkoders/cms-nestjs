@@ -13,6 +13,7 @@ import { Admin } from 'src/admin/entities/admin';
 import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
 import { JwtService } from '@nestjs/jwt';
+import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
 export class AuthService {
@@ -26,16 +27,15 @@ export class AuthService {
         private adminRepository: Repository<Admin>,
 
         private jwtService: JwtService,
-        // private readonly uploadservice: UploadService,
+        private readonly uploadservice: UploadService,
     ) { }
-    private async generateToken(user: any) {
-        const payload = { username: user.username, sub: user.email };
+    private async generateToken(user:any) {
+        const payload = {sub: user.email, role: user.role }; 
         return {
-            data: user,
             access_token: this.jwtService.sign(payload),
-
         };
     }
+
 
     async studentSignUp(createstudentdto: CreateStudentDto) {
         const existingUser = await this.studentRepository.findOneBy({
@@ -62,6 +62,7 @@ export class AuthService {
         const user = await this.studentRepository.findOneBy({
             email: loginstudentdto.email
         });
+        
         if (!user) {
             throw new UnauthorizedException("Enter Valid Credentials")
         }
@@ -72,7 +73,7 @@ export class AuthService {
         return this.generateToken(user);
     }
 
-    async teacherSignUp(createteacherdto: CreateTeacherDto) {
+    async teacherSignUp(createteacherdto: CreateTeacherDto, file:Express.Multer.File) {
         const existingUser = await this.teacherRepository.findOneBy({
             email: createteacherdto.email,
         });
@@ -83,16 +84,14 @@ export class AuthService {
             );
         }
         const hashedPassword = await bcrypt.hash(createteacherdto.password, 10);
-        // let profilePictureUrl: string;
-        // if (file) {
-        //     profilePictureUrl = await this.uploadservice.uploadImage(file);
-        // }
+        const imageUrl=await this.uploadservice.uploadImage(file)
         const user = this.teacherRepository.create({
             ...createteacherdto,
             password: hashedPassword,
-            // image: profilePictureUrl || null,
+            image:imageUrl,
             created_at: new Date(Date.now()),
             updated_at: new Date(Date.now()),
+        
         });
         this.teacherRepository.save(user);
         return this.generateToken(user);

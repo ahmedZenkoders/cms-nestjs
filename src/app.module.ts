@@ -22,7 +22,9 @@ import { CourseService } from './courses/courses.service';
 import { UploadService } from './upload/upload.service';
 import { UploadController } from './upload/upload.controller';
 import { UploadModule } from './upload/upload.module';
-import { json, urlencoded } from 'body-parser';
+import { RolesGuard } from './guards/role.guard';
+import { JwtAuthGuard } from './guards/jwt.guard';
+import { jwtConstant } from './auth/constants';
 
 
 @Module({
@@ -39,7 +41,7 @@ import { json, urlencoded } from 'body-parser';
     }),
     JwtModule.register({
       global: true,
-      secret: 'mysecretkey',
+      secret: jwtConstant.secret,
       signOptions: { expiresIn: '1h' },
     }),
     TypeOrmModule.forFeature([Student,Teacher,Admin,Domain,Course]),
@@ -52,12 +54,7 @@ import { json, urlencoded } from 'body-parser';
     UploadModule,
   ],
   controllers: [AdminController, UploadController],
-  providers: [DomainService, EmailDomainGuard,CourseService, UploadService],
+  providers: [DomainService,EmailDomainGuard,CourseService, UploadService,RolesGuard,JwtAuthGuard],
 })
 export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer
-  //     .apply(json({ limit: '50mb' }), urlencoded({ extended: true, limit: '50mb' }))
-  //     .forRoutes({ path: '*', method: RequestMethod.ALL });
-  // }
  }

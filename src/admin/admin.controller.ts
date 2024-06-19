@@ -5,10 +5,12 @@ import { RemoveCourseDto } from 'src/courses/dto/removeCourse.dto';
 import { Roles } from 'src/decorator/role.decorator';
 import { DomainService } from 'src/domain/domain.service';
 import { CreateDomainDto } from 'src/domain/dto/createDomain.dto';
+import { Role } from 'src/enum/role.enum';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 
-@UseGuards(RolesGuard)
-@Roles(['admin'])
+@UseGuards(JwtAuthGuard , RolesGuard)
+@Roles(Role.admin)
 @Controller('admin')
 export class AdminController {
     constructor(private readonly domainService: DomainService,
