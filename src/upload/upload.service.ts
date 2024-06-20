@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
 import * as FormData from 'form-data';
-import * as fs from 'fs';
+import { API_KEY } from './constants';
 
 @Injectable()
 export class UploadService {
@@ -9,10 +9,10 @@ export class UploadService {
   async uploadImage(file) {
     const formData = new FormData();
     formData.append('image',file.buffer.toString('base64'));
-    const apiKey = '60fc7d5a6e31fbf0b7210bb91d732286';
+    
 
     try {
-      const response = await axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData, {
+      const response = await axios.post(`https://api.imgbb.com/1/upload?key=${API_KEY}`, formData, {
         headers: {
           ...formData.getHeaders(),
         },

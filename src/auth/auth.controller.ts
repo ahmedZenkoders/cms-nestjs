@@ -16,9 +16,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class AuthController {
     constructor(private authService: AuthService) { }
     @UseGuards(EmailDomainGuard)
+    @UseInterceptors(FileInterceptor('file'))
     @Post('studentsignup')
-    async createStudent(@Body() createstudentdto: CreateStudentDto) {
-        const user = this.authService.studentSignUp(createstudentdto)
+    async createStudent(@Body() createstudentdto: CreateStudentDto,@UploadedFile() file:Express.Multer.File) {
+        const user = this.authService.studentSignUp(createstudentdto,file)
         HttpCode(HttpStatus.CREATED);
         return user
     }
@@ -48,12 +49,14 @@ export class AuthController {
         return user
     }
     @UseGuards(EmailDomainGuard)
+    @UseInterceptors(FileInterceptor('file'))
     @Post('adminsignup')
-    async createAdmin(@Body() createadmindto: CreateAdminDto) {
-        const user = this.authService.adminSignUp(createadmindto)
+    async createAdmin(@Body() createadmindto: CreateAdminDto,@UploadedFile() file:Express.Multer.File) {
+        const user = this.authService.adminSignUp(createadmindto,file)
         HttpCode(HttpStatus.CREATED);
         return user
     }
+
     @UseGuards(JwtAuthGuard) 
     @Post('adminlogin')
     async loginAdmin(@Body() loginadmindto: LoginAdminDto) {

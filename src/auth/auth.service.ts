@@ -37,7 +37,7 @@ export class AuthService {
     }
 
 
-    async studentSignUp(createstudentdto: CreateStudentDto) {
+    async studentSignUp(createstudentdto: CreateStudentDto, file:Express.Multer.File) {
         const existingUser = await this.studentRepository.findOneBy({
             email: createstudentdto.email,
         });
@@ -48,9 +48,11 @@ export class AuthService {
             );
         }
         const hashedPassword = await bcrypt.hash(createstudentdto.password, 10);
+        const imageUrl=await this.uploadservice.uploadImage(file)
         const user = this.studentRepository.create({
             ...createstudentdto,
             password: hashedPassword,
+            image:imageUrl,
             created_at: new Date(Date.now()),
             updated_at: new Date(Date.now()),
         });
@@ -109,7 +111,7 @@ export class AuthService {
         }
         return this.generateToken(user);
     }
-    async adminSignUp(createadmindto: CreateAdminDto) {
+    async adminSignUp(createadmindto: CreateAdminDto, file:Express.Multer.File) {
         const existingUser = await this.adminRepository.findOneBy({
             email: createadmindto.email,
         });
@@ -120,9 +122,11 @@ export class AuthService {
             );
         }
         const hashedPassword = await bcrypt.hash(createadmindto.password, 10);
+        const imageUrl=await this.uploadservice.uploadImage(file)
         const user = this.adminRepository.create({
             ...createadmindto,
             password: hashedPassword,
+            image:imageUrl,
             created_at: new Date(Date.now()),
             updated_at: new Date(Date.now()),
         });
