@@ -7,19 +7,18 @@ import { CreateTeacherDto } from 'src/teachers/dto/createTeacher.dto';
 import { LoginTeacherDto } from 'src/teachers/dto/loginTeacher.dto';
 import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
-import { EmailDomainGuard } from 'src/guards/email.guard';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Injectable()
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
-    @UseGuards(EmailDomainGuard)
-    @UseInterceptors(FileInterceptor('file'))
+    constructor(private authService: AuthService) {}
+    
     @Post('studentsignup')
-    async createStudent(@Body() createstudentdto: CreateStudentDto,@UploadedFile() file:Express.Multer.File) {
-        const user = this.authService.studentSignUp(createstudentdto,file)
+    @UseInterceptors(FileInterceptor('image'))
+    async createStudent(@Body() createstudentdto: CreateStudentDto,@UploadedFile() image:Express.Multer.File) {
+        const user = this.authService.studentSignUp(createstudentdto,image)
         HttpCode(HttpStatus.CREATED);
         return user
     }
@@ -31,12 +30,10 @@ export class AuthController {
         return user
     }
 
-
-    @UseGuards(EmailDomainGuard)
-    @UseInterceptors(FileInterceptor('file'))
     @Post('teachersignup')
-    async createTeacher(@Body() createteacherdto: CreateTeacherDto ,@UploadedFile() file:Express.Multer.File) {
-        const user = this.authService.teacherSignUp(createteacherdto,file);
+    @UseInterceptors(FileInterceptor('image'))
+    async createTeacher(@Body() createteacherdto: CreateTeacherDto ,@UploadedFile() image:Express.Multer.File) {
+        const user = this.authService.teacherSignUp(createteacherdto,image);
         HttpCode(HttpStatus.CREATED);
         return user
     }
@@ -48,11 +45,12 @@ export class AuthController {
         HttpCode(HttpStatus.OK);
         return user
     }
-    @UseGuards(EmailDomainGuard)
-    @UseInterceptors(FileInterceptor('file'))
+    
+    
     @Post('adminsignup')
-    async createAdmin(@Body() createadmindto: CreateAdminDto,@UploadedFile() file:Express.Multer.File) {
-        const user = this.authService.adminSignUp(createadmindto,file)
+    @UseInterceptors(FileInterceptor('image'))
+    async createAdmin(@Body() createadmindto: CreateAdminDto, @UploadedFile() image: Express.Multer.File) {
+        const user = this.authService.adminSignUp(createadmindto,image)
         HttpCode(HttpStatus.CREATED);
         return user
     }

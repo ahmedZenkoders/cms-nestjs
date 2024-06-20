@@ -21,8 +21,8 @@ export class Student {
     @Column()
     age: number
     
-    @Column({nullable:false})
-    image:string
+    @Column({ nullable: true })
+    img: string
 
     @Column({ type: 'timestamp' })
     created_at: Date

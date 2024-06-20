@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -36,8 +37,12 @@ export class DomainService {
     return {message: `${createdomaindto.name} domain is deleted`}
   }
 
-  async isDomainAllowed(createdomaindto:CreateDomainDto){
-    const domain = await this.domainRepository.findOne({ where: { name: createdomaindto.name } });
-    return !!domain;
+  async isDomainAllowed(email){
+    const domain=email.split('@')[1];
+    const allowedDomain = await this.domainRepository.findOne({ where: { name:domain } });
+    if(!allowedDomain){
+      throw new BadRequestException(`${domain} not exist.Enter valid domain`)
+    }
+    return allowedDomain;
   }
 }

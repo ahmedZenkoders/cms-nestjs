@@ -1,38 +1,38 @@
 /* eslint-disable prettier/prettier */
-import { Entity, PrimaryColumn, Column } from "typeorm"
+import { Entity, PrimaryColumn, Column } from "typeorm";
 
 @Entity({ name: "admin" })
 export class Admin {
     @PrimaryColumn()
-    email: string
+    email: string;
 
     @Column()
-    username: string
+    username: string;
 
     @Column()
-    password: string
+    password: string;
 
     @Column()
-    address: string
+    address: string;
 
     @Column()
-    contact: string
+    contact: string;
 
     @Column()
-    age: number
+    age: number;
 
-    @Column({nullable:false})
-    image:string
+    @Column({ nullable: true })
+    img: string;
 
     @Column({ type: 'timestamp' })
-    created_at: Date
+    created_at: Date;
 
     @Column({ type: 'timestamp' })
-    updated_at: Date
+    updated_at: Date;
 
-    @Column({ default: "true" })
-    is_verified: boolean
+    @Column({ default: true })
+    is_verified: boolean;
 
-    @Column({ default: "admin" })
-    role: string
+    @Column({ default: 'admin' })
+    role: string;
 }

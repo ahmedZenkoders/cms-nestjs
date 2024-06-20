@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Post, Body, HttpStatus, HttpCode, UseGuards } from '@nestjs/common';
 import { CourseService } from 'src/courses/courses.service';
 import { CreateCourseDto } from 'src/courses/dto/createCourse.dto';
@@ -9,12 +10,12 @@ import { Role } from 'src/enum/role.enum';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 
-@UseGuards(JwtAuthGuard , RolesGuard)
+@UseGuards(JwtAuthGuard,RolesGuard )
 @Roles(Role.admin)
 @Controller('admin')
 export class AdminController {
-    constructor(private readonly domainService: DomainService,
-        private readonly courseService:CourseService
+    constructor(private  domainService: DomainService,
+        private  courseService:CourseService
     ) { }
     
     

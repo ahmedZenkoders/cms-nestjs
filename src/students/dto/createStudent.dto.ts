@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { IsEmail, IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsOptional, IsUrl } from "@nestjs/class-validator";
+import { IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
 
 export class CreateStudentDto {
     @IsEmail({}, { message: 'Invalid email address' })
@@ -13,16 +14,16 @@ export class CreateStudentDto {
     @IsNotEmpty({ message: 'Name is required' })
     username: string;
 
-    @IsNotEmpty({message:"Image is required"})
-    @IsString()
-    image:string;
+    @IsOptional()
+    @IsUrl({ allow_underscores: true })
+    img: string;
 
     @IsString()
     @IsNotEmpty({ message: 'Contact is required' })
     contact: string;
 
     @IsNotEmpty({ message: 'Age is required' })
-    @IsNumber()
+   
     age: number;
 
     @IsNotEmpty({ message: 'Address is required' })

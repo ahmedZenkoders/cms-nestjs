@@ -14,6 +14,7 @@ import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UploadService } from 'src/upload/upload.service';
+import { DomainService } from 'src/domain/domain.service';
 
 @Injectable()
 export class AuthService {
@@ -27,19 +28,16 @@ export class AuthService {
         private adminRepository: Repository<Admin>,
 
         private jwtService: JwtService,
-        private readonly uploadservice: UploadService,
+        private uploadservice: UploadService,
+        private domainservice: DomainService
     ) { }
-    private async generateToken(user:any) {
-        const payload = {sub: user.email, role: user.role }; 
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
-    }
 
 
-    async studentSignUp(createstudentdto: CreateStudentDto, file:Express.Multer.File) {
-        const existingUser = await this.studentRepository.findOneBy({
-            email: createstudentdto.email,
+
+    async adminSignUp(createadmindto: CreateAdminDto, image: Express.Multer.File) {
+        await this.domainservice.isDomainAllowed(createadmindto.email)
+        const existingUser = await this.adminRepository.findOneBy({
+            email: createadmindto.email,
         });
         if (existingUser) {
             throw new HttpException(
@@ -47,35 +45,33 @@ export class AuthService {
                 HttpStatus.BAD_REQUEST,
             );
         }
-        const hashedPassword = await bcrypt.hash(createstudentdto.password, 10);
-        const imageUrl=await this.uploadservice.uploadImage(file)
-        const user = this.studentRepository.create({
-            ...createstudentdto,
+
+
+        const hashedPassword = await bcrypt.hash(createadmindto.password, 10);
+        const imageurl = await this.uploadservice.uploadImage(image)
+        const user = this.adminRepository.create({
+            ...createadmindto,
             password: hashedPassword,
-            image:imageUrl,
+            img: imageurl,
             created_at: new Date(Date.now()),
             updated_at: new Date(Date.now()),
         });
-        this.studentRepository.save(user);
-        return this.generateToken(user);
+        this.adminRepository.save(user);
+        const payload = {
+            email: createadmindto.email,
+            role: "admin"
+        }
+        const token = this.jwtService.sign(payload)
+        return { data: user, token: token };
     }
 
-    async studentLogin(loginstudentdto: LoginStudentDto) {
-        const user = await this.studentRepository.findOneBy({
-            email: loginstudentdto.email
-        });
-        
-        if (!user) {
-            throw new UnauthorizedException("Enter Valid Credentials")
-        }
-        const isMatch = await bcrypt.compare(loginstudentdto.password, user.password);
-        if (!isMatch) {
-            throw new UnauthorizedException("Invalid Password")
-        }
-        return this.generateToken(user);
-    }
 
-    async teacherSignUp(createteacherdto: CreateTeacherDto, file:Express.Multer.File) {
+
+
+
+
+    async teacherSignUp(createteacherdto: CreateTeacherDto, image: Express.Multer.File) {
+        await this.domainservice.isDomainAllowed(createteacherdto.email)
         const existingUser = await this.teacherRepository.findOneBy({
             email: createteacherdto.email,
         });
@@ -86,17 +82,68 @@ export class AuthService {
             );
         }
         const hashedPassword = await bcrypt.hash(createteacherdto.password, 10);
-        const imageUrl=await this.uploadservice.uploadImage(file)
+        const imageurl = await this.uploadservice.uploadImage(image)
         const user = this.teacherRepository.create({
             ...createteacherdto,
             password: hashedPassword,
-            image:imageUrl,
+            img: imageurl,
             created_at: new Date(Date.now()),
             updated_at: new Date(Date.now()),
-        
+
         });
-        this.teacherRepository.save(user);
-        return this.generateToken(user);
+        const payload = {
+            email: createteacherdto.email,
+            role: "teacher"
+        }
+        const token = this.jwtService.sign(payload)
+        return { data: user, token: token };
+    }
+
+
+    async studentSignUp(createstudentdto: CreateStudentDto, image: Express.Multer.File) {
+        await this.domainservice.isDomainAllowed(createstudentdto.email)
+        const existingUser = await this.studentRepository.findOneBy({
+            email: createstudentdto.email,
+        });
+        if (existingUser) {
+            throw new HttpException(
+                'Email Already taken.',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const hashedPassword = await bcrypt.hash(createstudentdto.password, 10);
+        const imageurl = await this.uploadservice.uploadImage(image)
+        const user = this.studentRepository.create({
+            ...createstudentdto,
+            password: hashedPassword,
+            img: imageurl,
+            created_at: new Date(Date.now()),
+            updated_at: new Date(Date.now()),
+
+        });
+
+        this.studentRepository.save(user);
+        const payload = {
+            email: createstudentdto.email,
+            role: "student"
+        }
+        const token = this.jwtService.sign(payload)
+        return { data: user, token: token };
+    }
+
+    
+    async adminLogin(loginadmindto: LoginAdminDto) {
+        const user = await this.adminRepository.findOneBy({
+            email: loginadmindto.email
+        });
+        if (!user) {
+            throw new UnauthorizedException("Enter Valid Credentials")
+        }
+        const isMatch = await bcrypt.compare(loginadmindto.password, user.password);
+        if (!isMatch) {
+            throw new UnauthorizedException("Invalid Password")
+        }
+
     }
     async teacherLogin(loginteacherdto: LoginTeacherDto) {
         const user = await this.teacherRepository.findOneBy({
@@ -109,42 +156,22 @@ export class AuthService {
         if (!isMatch) {
             throw new UnauthorizedException("Invalid Password")
         }
-        return this.generateToken(user);
+       
     }
-    async adminSignUp(createadmindto: CreateAdminDto, file:Express.Multer.File) {
-        const existingUser = await this.adminRepository.findOneBy({
-            email: createadmindto.email,
+    async studentLogin(loginstudentdto: LoginStudentDto) {
+        const user = await this.studentRepository.findOneBy({
+            email: loginstudentdto.email
         });
-        if (existingUser) {
-            throw new HttpException(
-                'Email Already taken.',
-                HttpStatus.BAD_REQUEST,
-            );
-        }
-        const hashedPassword = await bcrypt.hash(createadmindto.password, 10);
-        const imageUrl=await this.uploadservice.uploadImage(file)
-        const user = this.adminRepository.create({
-            ...createadmindto,
-            password: hashedPassword,
-            image:imageUrl,
-            created_at: new Date(Date.now()),
-            updated_at: new Date(Date.now()),
-        });
-        this.adminRepository.save(user);
-        return this.generateToken(user);
-    }
-    async adminLogin(loginadmindto: LoginAdminDto) {
-        const user = await this.adminRepository.findOneBy({
-            email: loginadmindto.email
-        });
+
         if (!user) {
             throw new UnauthorizedException("Enter Valid Credentials")
         }
-        const isMatch = await bcrypt.compare(loginadmindto.password, user.password);
+        const isMatch = await bcrypt.compare(loginstudentdto.password, user.password);
         if (!isMatch) {
             throw new UnauthorizedException("Invalid Password")
         }
-        return this.generateToken(user);
+        // return this.generateToken(user);
     }
+
 }
 

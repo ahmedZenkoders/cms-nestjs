@@ -1,6 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, ExecutionContext, UnauthorizedException, CanActivate } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { AuthGuard } from "@nestjs/passport";
 import { Observable } from "rxjs";
 import { jwtConstant } from "src/auth/constants";
 

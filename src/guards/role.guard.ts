@@ -1,4 +1,5 @@
-import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { role_key } from 'src/decorator/role.decorator';
 
@@ -11,8 +12,8 @@ export class RolesGuard implements CanActivate {
     console.log("Inside role guard")
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(role_key, [context.getHandler(),context.getClass()]);
     const request = context.switchToHttp().getRequest();
-    console.log('Rr:',requiredRoles);
-    console.log('requested role:',request.user?.role)
+    console.log('Required role:',requiredRoles);
+    console.log('requested role:',request.user)
     if (!requiredRoles ) {
       return true; 
     }
