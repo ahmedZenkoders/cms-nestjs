@@ -15,6 +15,7 @@ import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UploadService } from 'src/upload/upload.service';
 import { DomainService } from 'src/domain/domain.service';
+import { OtpService } from 'src/otp/otp.service';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,8 @@ export class AuthService {
 
         private jwtService: JwtService,
         private uploadservice: UploadService,
-        private domainservice: DomainService
+        private domainservice: DomainService,
+        private otpservice:OtpService
     ) { }
 
 
@@ -45,8 +47,6 @@ export class AuthService {
                 HttpStatus.BAD_REQUEST,
             );
         }
-
-
         const hashedPassword = await bcrypt.hash(createadmindto.password, 10);
         const imageurl = await this.uploadservice.uploadImage(image)
         const user = this.adminRepository.create({
@@ -64,12 +64,6 @@ export class AuthService {
         const token = this.jwtService.sign(payload)
         return { data: user, token: token };
     }
-
-
-
-
-
-
     async teacherSignUp(createteacherdto: CreateTeacherDto, image: Express.Multer.File) {
         await this.domainservice.isDomainAllowed(createteacherdto.email)
         const existingUser = await this.teacherRepository.findOneBy({
@@ -170,7 +164,7 @@ export class AuthService {
         if (!isMatch) {
             throw new UnauthorizedException("Invalid Password")
         }
-        // return this.generateToken(user);
+
     }
 
 }

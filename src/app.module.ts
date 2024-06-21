@@ -24,6 +24,9 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 import { jwtConstant } from './auth/constants';
 import { MulterModule } from '@nestjs/platform-express';
 import { OtpModule } from './otp/otp.module';
+import { Otp } from './otp/entities/otp';
+import { OtpService } from './otp/otp.service';
+import { MailService } from './mail/mail.service';
 
 
 @Module({
@@ -35,7 +38,7 @@ import { OtpModule } from './otp/otp.module';
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
-      entities: [Student,Teacher,Admin,Domain,Course],
+      entities: [Student,Teacher,Admin,Domain,Course,Otp],
       synchronize: true,
     }),
     MulterModule.register(
@@ -47,7 +50,7 @@ import { OtpModule } from './otp/otp.module';
       secret: jwtConstant.secret,
       signOptions: { expiresIn: '1h' },
     }),
-    TypeOrmModule.forFeature([Student,Teacher,Admin,Domain,Course]),
+    TypeOrmModule.forFeature([Student,Teacher,Admin,Domain,Course,Otp]),
     AuthModule,
     StudentsModule,
     TeachersModule,
@@ -58,7 +61,7 @@ import { OtpModule } from './otp/otp.module';
     OtpModule,
   ],
   controllers: [AdminController, UploadController],
-  providers: [DomainService,CourseService, UploadService,RolesGuard,JwtAuthGuard],
+  providers: [DomainService,CourseService, UploadService,RolesGuard,JwtAuthGuard,OtpService,MailService],
 })
 export class AppModule {
  }
