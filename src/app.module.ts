@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import {  Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { StudentsModule } from './students/students.module';
@@ -27,7 +27,12 @@ import { OtpModule } from './otp/otp.module';
 import { Otp } from './otp/entities/otp';
 import { OtpService } from './otp/otp.service';
 import { MailService } from './mail/mail.service';
-
+import { TeachersController } from './teachers/teachers.controller';
+import { StudentsController } from './students/students.controller';
+import { DomainController } from './domain/domain.controller';
+import { OtpController } from './otp/otp.controller';
+import { CoursesController } from './courses/courses.controller';
+import { EnrolmentModule } from './enrolment/enrolment.module';
 
 @Module({
   imports: [
@@ -38,19 +43,16 @@ import { MailService } from './mail/mail.service';
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
-      entities: [Student,Teacher,Admin,Domain,Course,Otp],
+      entities: [Student, Teacher, Admin, Domain, Course, Otp],
       synchronize: true,
     }),
-    MulterModule.register(
-      {dest:"./uploads"}
-    )
-    ,
+    MulterModule.register({ dest: './uploads' }),
     JwtModule.register({
       global: true,
       secret: jwtConstant.secret,
       signOptions: { expiresIn: '1h' },
     }),
-    TypeOrmModule.forFeature([Student,Teacher,Admin,Domain,Course,Otp]),
+    TypeOrmModule.forFeature([Student, Teacher, Admin, Domain, Course, Otp]),
     AuthModule,
     StudentsModule,
     TeachersModule,
@@ -59,9 +61,25 @@ import { MailService } from './mail/mail.service';
     DomainModule,
     UploadModule,
     OtpModule,
+    EnrolmentModule,
   ],
-  controllers: [AdminController, UploadController],
-  providers: [DomainService,CourseService, UploadService,RolesGuard,JwtAuthGuard,OtpService,MailService],
+  controllers: [
+    AdminController,
+    UploadController,
+    TeachersController,
+    StudentsController,
+    DomainController,
+    OtpController,
+    CoursesController,
+  ],
+  providers: [
+    DomainService,
+    CourseService,
+    UploadService,
+    RolesGuard,
+    JwtAuthGuard,
+    OtpService,
+    MailService,
+  ],
 })
-export class AppModule {
- }
+export class AppModule {}

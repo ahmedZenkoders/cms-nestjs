@@ -4,8 +4,8 @@ import { DomainService } from './domain.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Domain } from './entities/domain';
 @Module({
-  imports:[TypeOrmModule.forFeature([Domain])],
+  imports: [TypeOrmModule.forFeature([Domain])],
   controllers: [DomainController],
-  providers: [DomainService]
+  providers: [DomainService],
 })
 export class DomainModule {}

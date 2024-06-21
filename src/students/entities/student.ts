@@ -1,41 +1,44 @@
 /* eslint-disable prettier/prettier */
-import { Entity, PrimaryColumn, Column } from "typeorm"
+import { Enrolment } from 'src/enrolment/entities/enrolment';
+import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
 
-@Entity({ name: "students" })
+@Entity({ name: 'students' })
 export class Student {
-    @PrimaryColumn()
-    email: string
+  @PrimaryColumn()
+  email: string;
 
-    @Column()
-    username: string
+  @Column()
+  username: string;
 
-    @Column()
-    password: string
+  @Column()
+  password: string;
 
-    @Column()
-    address: string
+  @Column()
+  address: string;
 
-    @Column()
-    contact: string
+  @Column()
+  contact: string;
 
-    @Column()
-    age: number
-    
-    @Column({ nullable: true })
-    img: string
+  @Column()
+  age: number;
 
-    @Column({ type: 'timestamp' })
-    created_at: Date
+  @Column({ nullable: true })
+  img: string;
 
-    @Column({ type: 'timestamp' })
-    updated_at: Date
+  @Column({ type: 'timestamp' })
+  created_at: Date;
 
-    @Column({default:"false"})
-    is_suspended: boolean
+  @Column({ type: 'timestamp' })
+  updated_at: Date;
 
-    @Column({default:"false"})
-    is_verified: boolean
+  @Column({ default: 'false' })
+  is_suspended: boolean;
 
-    @Column({default:"student"})
-    role:string
+  @Column({ default: 'false' })
+  is_verified: boolean;
+
+  @Column({ default: 'student' })
+  role: string;
+  @OneToMany(() => Enrolment, (enrolment) => enrolment.student)
+  enrolments: Enrolment[];
 }

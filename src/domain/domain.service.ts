@@ -14,34 +14,44 @@ export class DomainService {
 
   async getAllowedDomains() {
     const domains = await this.domainRepository.find();
-    return domains.map(domain => domain.name);
+    return domains.map((domain) => domain.name);
   }
 
-  async addAllowedDomain(createdomaindto:CreateDomainDto) {
-      const existingDomain = await this.domainRepository.findOne({ where: { name: createdomaindto.name } });
-      if (existingDomain) {
-        throw new BadRequestException(`Domain ${createdomaindto.name} already exists`);
-      }
-  
-      const domain = await this.domainRepository.create({ name: createdomaindto.name });
-      await this.domainRepository.save(domain);
-      return { message: `${createdomaindto.name} domain is created: ` };
+  async addAllowedDomain(createdomaindto: CreateDomainDto) {
+    const existingDomain = await this.domainRepository.findOne({
+      where: { name: createdomaindto.name },
+    });
+    if (existingDomain) {
+      throw new BadRequestException(
+        `Domain ${createdomaindto.name} already exists`,
+      );
     }
 
-  async removeAllowedDomain(createdomaindto:CreateDomainDto){
-    const existingDomain=await this.domainRepository.findOne({where:{name:createdomaindto.name}});
-    if(!existingDomain){
-        throw new BadRequestException(`${createdomaindto.name} didn't exist `);
+    const domain = await this.domainRepository.create({
+      name: createdomaindto.name,
+    });
+    await this.domainRepository.save(domain);
+    return { message: `${createdomaindto.name} domain is created: ` };
+  }
+
+  async removeAllowedDomain(createdomaindto: CreateDomainDto) {
+    const existingDomain = await this.domainRepository.findOne({
+      where: { name: createdomaindto.name },
+    });
+    if (!existingDomain) {
+      throw new BadRequestException(`${createdomaindto.name} didn't exist `);
     }
     await this.domainRepository.delete(createdomaindto);
-    return {message: `${createdomaindto.name} domain is deleted`}
+    return { message: `${createdomaindto.name} domain is deleted` };
   }
 
-  async isDomainAllowed(email){
-    const domain=email.split('@')[1];
-    const allowedDomain = await this.domainRepository.findOne({ where: { name:domain } });
-    if(!allowedDomain){
-      throw new BadRequestException(`${domain} not exist.Enter valid domain`)
+  async isDomainAllowed(email) {
+    const domain = email.split('@')[1];
+    const allowedDomain = await this.domainRepository.findOne({
+      where: { name: domain },
+    });
+    if (!allowedDomain) {
+      throw new BadRequestException(`${domain} not exist.Enter valid domain`);
     }
     return allowedDomain;
   }

@@ -1,16 +1,15 @@
-/* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseService } from './courses.service';
+import { EnrolmentService } from './enrolment.service';
 
-describe('CoursesService', () => {
-  let service: CourseService;
+describe('EnrolmentService', () => {
+  let service: EnrolmentService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CourseService],
+      providers: [EnrolmentService],
     }).compile();
 
-    service = module.get<CourseService>(CourseService);
+    service = module.get<EnrolmentService>(EnrolmentService);
   });
 
   it('should be defined', () => {
