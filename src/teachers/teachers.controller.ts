@@ -1,24 +1,50 @@
-/* eslint-disable prettier/prettier */
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CourseService } from 'src/courses/courses.service';
 import { CreateCourseDto } from 'src/courses/dto/createCourse.dto';
-import { RemoveCourseDto } from 'src/courses/dto/removeCourse.dto';
-
-@Controller('teacher')
+import { UpdateCourseDto } from 'src/courses/dto/updateCourse.dto';
+import { Roles } from 'src/decorator/role.decorator';
+import { EnrolmentService } from 'src/enrolment/enrolment.service';
+import { Role } from 'src/enum/role.enum';
+@Roles(Role.teacher)
+@Controller('teachers')
 export class TeachersController {
-  constructor(private courseService: CourseService) {}
+  constructor(
+    private readonly enrolmentsService: EnrolmentService,
+    private readonly courseService: CourseService,
+  ) {}
 
-  @Post('addCourse')
-  async addCourse(@Body() createcoursedto: CreateCourseDto) {
-    const course = await this.courseService.addCourse(createcoursedto);
-    HttpCode(HttpStatus.CREATED);
-    return course;
+  @HttpCode(HttpStatus.OK)
+  @Post('/teachersEnrolment')
+  async getEnrolmentsbyEmail(@Body('email') email: string) {
+    return await this.enrolmentsService.GetAllEnrolmentsWithTeacher(email);
   }
 
-  @Post('removeCourse')
-  async removeCourse(@Body() removecoursedto: RemoveCourseDto) {
-    const course = await this.courseService.removeCourse(removecoursedto);
-    HttpCode(HttpStatus.OK);
-    return course;
+  @Post('/addCourse')
+  async Create(@Body(ValidationPipe) createCourseDto: CreateCourseDto) {
+    return await this.courseService.addCourse(createCourseDto);
+  }
+ 
+  @Patch('/updateCourse/:id')
+  async Update(
+    @Param('id') id: string,
+    @Body(ValidationPipe) updateCourseDto: UpdateCourseDto,
+  ) {
+    return await this.courseService.updateCourse(id, updateCourseDto);
+  }
+
+
+  @Delete('/deleteCourse/:id')
+  async delete(@Param('id') id: string, @Body() email: string) {
+    return await this.courseService.removeCourse(id, email);
   }
 }

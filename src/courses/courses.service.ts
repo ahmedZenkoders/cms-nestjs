@@ -1,64 +1,118 @@
-/* eslint-disable prettier/prettier */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Course } from './entities/course';
 import { Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/createCourse.dto';
-import { RemoveCourseDto } from './dto/removeCourse.dto';
-import { Course } from './entities/course';
-import { GetCourseDto } from './dto/getCourse.dto';
+import { UpdateCourseDto } from './dto/updateCourse.dto';
+import { Teacher } from 'src/teachers/entities/teacher';
 
 @Injectable()
 export class CourseService {
   constructor(
-    @InjectRepository(Course)
-    private courseRepository: Repository<Course>,
+    @InjectRepository(Course) private CourseRepository: Repository<Course>,
+    @InjectRepository(Teacher) private TeacherRepository: Repository<Teacher>,
   ) {}
+  async addCourse(createCourseDto: CreateCourseDto) {
+    try {
+      const alreadyExist = await this.CourseRepository.findOneBy({
+        coursecode: createCourseDto.coursecode,
+      });
+      const teacherWithId = await this.TeacherRepository.findOneBy({
+        email: createCourseDto.teacher_id,
+      });
+      if (!teacherWithId) {
+        throw new BadRequestException('Teacher doesnot exist');
+      }
+      if (alreadyExist) {
+        throw new BadRequestException('Course Already exist');
+      }
+      if (new Date(createCourseDto.deadline) < new Date()) {
+        throw new BadRequestException(
+          'Deadline cannot be lesser than current date',
+        );
+      }
+      const addCourse = this.CourseRepository.create({
+        ...createCourseDto,
+        teacher_id: teacherWithId,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+      await this.CourseRepository.save(addCourse);
 
+      return {
+        message: 'Course Created Successfully',
+        course: addCourse,
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+      };
+    }
+  }
   async getAllCourses() {
-    const courses = await this.courseRepository.find();
-    return courses.map((course) => course.name);
+      const courses = await this.CourseRepository.find();
+      if (courses.length >= 1) {
+        return {
+          courses,
+        };
+      }
+      throw new NotFoundException('No course available');
+    
   }
-  async getCourseById(getcoursedto: GetCourseDto) {
-    const course = await this.courseRepository.findOne({
-      where: { coursecode: getcoursedto.coursecode },
-    });
-    return course;
-  }
-  async addCourse(createcoursedto: CreateCourseDto) {
-    const existingCourse = await this.courseRepository.findOne({
-      where: { coursecode: createcoursedto.coursecode },
-    });
-    if (existingCourse) {
-      throw new BadRequestException(
-        `${createcoursedto.name} Course  already exists`,
-      );
+  async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
+    try {
+      const teacherId = await this.TeacherRepository.findOneBy({
+        email: updateCourseDto.teacher_id,
+      });
+      if (!teacherId) {
+        throw new Error('Teacher doesnot exist');
+      }
+      const course = await this.CourseRepository.findOneBy({
+        coursecode: id,
+        teacher_id: teacherId,
+      });
+      if (course) {
+        return this.CourseRepository.save({ ...course, updateCourseDto });
+      }
+      throw new NotFoundException('Course doesnot exist');
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-
-    const course = this.courseRepository.create({
-      ...createcoursedto,
-      created_at: new Date(Date.now()),
-      updated_at: new Date(Date.now()),
-    });
-    await this.courseRepository.save(course);
-    return {
-      data: course,
-      message: `${createcoursedto.name} course is created: `,
-    };
   }
+  async removeCourse(id: string, email: string) {
+    try {
+      const teacherId = await this.TeacherRepository.findOneBy({
+        email: email,
+      });
+      if (!teacherId) {
+        throw new Error('Teacher doesnot exist');
+      }
+      const courseExist = await this.CourseRepository.findOneBy({
+       coursecode: id,
+        teacher_id: teacherId,
+      });
+      if (courseExist.coursecode && new Date(courseExist.deadline) > new Date()) {
+        const removedCourse = await this.CourseRepository.delete(
+          courseExist.coursecode,
+        );
+        if (removedCourse.affected >= 1) {
+          return {
+            message: 'Course deleted successfully ',
+            course: courseExist.coursecode,
+            status: HttpStatus.OK,
+          };
+        }
+      }
 
-  async removeCourse(removecoursedto: RemoveCourseDto) {
-    const existingCourse = await this.courseRepository.findOne({
-      where: { coursecode: removecoursedto.coursecode },
-    });
-    if (!existingCourse) {
-      throw new BadRequestException(
-        `${removecoursedto.coursecode} didn't exist `,
-      );
+      throw new BadRequestException('Course doesnot exist');
+    } catch (error) {
+      throw new InternalServerErrorException(error.messsage);
     }
-    await this.courseRepository.delete(removecoursedto);
-    return {
-      data: existingCourse,
-      message: `${removecoursedto.coursecode} course is deleted`,
-    };
   }
 }

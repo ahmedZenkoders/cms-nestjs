@@ -1,21 +1,33 @@
-/* eslint-disable prettier/prettier */
 import { Course } from 'src/courses/entities/course';
+import { EnrolmentStatus } from 'src/enum/enrolment.enum';
 import { Student } from 'src/students/entities/student';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity({ name: 'enrolment' })
+@Entity()
 export class Enrolment {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
-  enrolment_date: Date;
+  @Column({
+    type: 'enum',
+    enum: EnrolmentStatus,
+    default: EnrolmentStatus.active,
+  })
+  status: EnrolmentStatus;
+  @Column({ type: 'timestamptz' })
+  created_at: Date;
 
-  @Column({ type: 'timestamp' })
-  updated_at: Date;
-
+  
   @ManyToOne(() => Course, (course) => course.enrolments)
-  course: Course;
+  @JoinColumn({ name: 'course_code' })
+  course_code: Course;
 
   @ManyToOne(() => Student, (student) => student.enrolments)
-  student: Student;
+  @JoinColumn({ name: 'student_id' })
+  student_id: Student;
 }

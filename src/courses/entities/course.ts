@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Enrolment } from 'src/enrolment/entities/enrolment';
-import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
+import { Teacher } from 'src/teachers/entities/teacher';
+import { Entity, PrimaryColumn, Column, OneToMany ,JoinColumn,ManyToOne} from 'typeorm';
 
 @Entity({ name: 'courses' })
 export class Course {
@@ -25,6 +26,10 @@ export class Course {
   @Column({ type: 'timestamp' })
   updated_at: Date;
 
-  @OneToMany(() => Enrolment, (enrolment) => enrolment.course)
-  enrolments: Enrolment[];
+  @OneToMany(() => Enrolment, (enrolment) => enrolment.course_code)
+  enrolments: Enrolment;
+  
+  @ManyToOne(() => Teacher, (teacher) => teacher.courses)
+  @JoinColumn({ name: 'teacher_id' })
+  teacher_id: Teacher;
 }

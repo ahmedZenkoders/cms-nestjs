@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Course } from 'src/courses/entities/course';
+import { Entity, PrimaryColumn, Column ,OneToMany} from 'typeorm';
 
 @Entity({ name: 'teachers' })
 export class Teacher {
@@ -38,4 +39,7 @@ export class Teacher {
 
   @Column({ default: 'teacher' })
   role: string;
+  
+  @OneToMany(() => Course, (course) => course.teacher_id)
+  courses: Course;
 }

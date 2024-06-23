@@ -7,9 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Domain } from 'src/domain/entities/domain';
 import { Course } from 'src/courses/entities/course';
 import { CourseService } from 'src/courses/courses.service';
+import { Teacher } from 'src/teachers/entities/teacher';
+import { TeachersService } from 'src/teachers/teachers.service';
 @Module({
-  imports: [TypeOrmModule.forFeature([Domain, Course])],
-  providers: [AdminService, DomainService, CourseService],
+  imports: [TypeOrmModule.forFeature([Domain, Course,Teacher])],
+  providers: [AdminService, DomainService, CourseService,TeachersService],
   controllers: [AdminController],
 })
 export class AdminModule {}

@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Enrolment } from 'src/enrolment/entities/enrolment';
-import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
+import { Teacher } from 'src/teachers/entities/teacher';
+import { Entity, PrimaryColumn, Column, OneToMany,ManyToOne ,JoinColumn} from 'typeorm';
 
 @Entity({ name: 'students' })
 export class Student {
@@ -39,6 +40,13 @@ export class Student {
 
   @Column({ default: 'student' })
   role: string;
-  @OneToMany(() => Enrolment, (enrolment) => enrolment.student)
-  enrolments: Enrolment[];
+  
+  @OneToMany(() => Enrolment, (enrolment) => enrolment.course_code)
+  enrolments: Enrolment;
+
+  @ManyToOne(() => Teacher, (teacher) => teacher.courses)
+  @JoinColumn({ name: 'teacher_id' })
+  teacher_id: Teacher;
 }
+
+
