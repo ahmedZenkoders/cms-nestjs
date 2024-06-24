@@ -1,7 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { Teacher } from 'src/teachers/entities/teacher';
-import { Entity, PrimaryColumn, Column, OneToMany ,JoinColumn,ManyToOne} from 'typeorm';
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  OneToMany,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
 @Entity({ name: 'courses' })
 export class Course {
@@ -28,7 +35,7 @@ export class Course {
 
   @OneToMany(() => Enrolment, (enrolment) => enrolment.course_code)
   enrolments: Enrolment;
-  
+
   @ManyToOne(() => Teacher, (teacher) => teacher.courses)
   @JoinColumn({ name: 'teacher_id' })
   teacher_id: Teacher;

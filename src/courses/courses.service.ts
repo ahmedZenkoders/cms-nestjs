@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   BadRequestException,
   HttpStatus,
@@ -15,15 +16,15 @@ import { Teacher } from 'src/teachers/entities/teacher';
 @Injectable()
 export class CourseService {
   constructor(
-    @InjectRepository(Course) private CourseRepository: Repository<Course>,
-    @InjectRepository(Teacher) private TeacherRepository: Repository<Teacher>,
+    @InjectRepository(Course) private courserepository: Repository<Course>,
+    @InjectRepository(Teacher) private teacherrepository: Repository<Teacher>,
   ) {}
   async addCourse(createCourseDto: CreateCourseDto) {
     try {
-      const alreadyExist = await this.CourseRepository.findOneBy({
+      const alreadyExist = await this.courserepository.findOneBy({
         coursecode: createCourseDto.coursecode,
       });
-      const teacherWithId = await this.TeacherRepository.findOneBy({
+      const teacherWithId = await this.teacherrepository.findOneBy({
         email: createCourseDto.teacher_id,
       });
       if (!teacherWithId) {
@@ -37,13 +38,13 @@ export class CourseService {
           'Deadline cannot be lesser than current date',
         );
       }
-      const addCourse = this.CourseRepository.create({
+      const addCourse = this.courserepository.create({
         ...createCourseDto,
         teacher_id: teacherWithId,
         created_at: new Date(),
         updated_at: new Date(),
       });
-      await this.CourseRepository.save(addCourse);
+      await this.courserepository.save(addCourse);
 
       return {
         message: 'Course Created Successfully',
@@ -56,29 +57,37 @@ export class CourseService {
     }
   }
   async getAllCourses() {
-      const courses = await this.CourseRepository.find();
-      if (courses.length >= 1) {
-        return {
-          courses,
-        };
-      }
-      throw new NotFoundException('No course available');
-    
+    const courses = await this.courserepository.find();
+    if (courses.length >= 1) {
+      return {
+        courses,
+      };
+    }
+    throw new NotFoundException('No course available');
+  }
+  async getCourseById(id: string) {
+    const course = await this.courserepository.findOneBy({
+      coursecode: id,
+    });
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+    return course;
   }
   async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
     try {
-      const teacherId = await this.TeacherRepository.findOneBy({
+      const teacherId = await this.teacherrepository.findOneBy({
         email: updateCourseDto.teacher_id,
       });
       if (!teacherId) {
         throw new Error('Teacher doesnot exist');
       }
-      const course = await this.CourseRepository.findOneBy({
+      const course = await this.courserepository.findOneBy({
         coursecode: id,
         teacher_id: teacherId,
       });
       if (course) {
-        return this.CourseRepository.save({ ...course, updateCourseDto });
+        return this.courserepository.save({ ...course, updateCourseDto });
       }
       throw new NotFoundException('Course doesnot exist');
     } catch (error) {
@@ -87,18 +96,21 @@ export class CourseService {
   }
   async removeCourse(id: string, email: string) {
     try {
-      const teacherId = await this.TeacherRepository.findOneBy({
+      const teacherId = await this.teacherrepository.findOneBy({
         email: email,
       });
       if (!teacherId) {
         throw new Error('Teacher doesnot exist');
       }
-      const courseExist = await this.CourseRepository.findOneBy({
-       coursecode: id,
+      const courseExist = await this.courserepository.findOneBy({
+        coursecode: id,
         teacher_id: teacherId,
       });
-      if (courseExist.coursecode && new Date(courseExist.deadline) > new Date()) {
-        const removedCourse = await this.CourseRepository.delete(
+      if (
+        courseExist.coursecode &&
+        new Date(courseExist.deadline) > new Date()
+      ) {
+        const removedCourse = await this.courserepository.delete(
           courseExist.coursecode,
         );
         if (removedCourse.affected >= 1) {

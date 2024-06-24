@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateCourseDto } from './createCourse.dto';
 import { IsEmail, IsNotEmpty } from 'class-validator';

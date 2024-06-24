@@ -40,9 +40,12 @@ export class OtpService {
   }
 
   async verifyOtp(verifyOtpDto: VerifyOtpDto, entityType: string) {
-    const otpEntry = await this.otprepository.findOne({
-      where: { email: verifyOtpDto.email, otp: verifyOtpDto.otp },
+    console.log(verifyOtpDto.email);
+    const otpEntry = await this.otprepository.findOneBy({
+      email: verifyOtpDto.email,
+      otp: verifyOtpDto.otp,
     });
+    console.log('Otp', otpEntry);
     if (!otpEntry) {
       throw new BadRequestException('Invalid OTP');
     }
@@ -69,6 +72,7 @@ export class OtpService {
         user = await this.teacherrepository.findOne({
           where: { email: verifyOtpDto.email },
         });
+        console.log('User:', user);
         break;
       case 'admin':
         await this.adminrepository.update(

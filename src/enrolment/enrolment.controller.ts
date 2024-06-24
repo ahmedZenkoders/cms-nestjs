@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, UseGuards } from '@nestjs/common';
 import { EnrolmentService } from './enrolment.service';
 import { RolesGuard } from 'src/guards/role.guard';

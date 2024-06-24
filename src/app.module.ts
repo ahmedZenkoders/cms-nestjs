@@ -17,7 +17,6 @@ import { Domain } from './domain/entities/domain';
 import { Course } from './courses/entities/course';
 import { CourseService } from './courses/courses.service';
 import { UploadService } from './upload/upload.service';
-import { UploadController } from './upload/upload.controller';
 import { UploadModule } from './upload/upload.module';
 import { RolesGuard } from './guards/role.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
@@ -35,6 +34,7 @@ import { CoursesController } from './courses/courses.controller';
 import { EnrolmentModule } from './enrolment/enrolment.module';
 import { Enrolment } from './enrolment/entities/enrolment';
 import { EnrolmentService } from './enrolment/enrolment.service';
+import { StudentsService } from './students/students.service';
 
 @Module({
   imports: [
@@ -45,7 +45,7 @@ import { EnrolmentService } from './enrolment/enrolment.service';
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
-      entities: [Student, Teacher, Admin, Domain, Course, Otp,Enrolment],
+      entities: [Student, Teacher, Admin, Domain, Course, Otp, Enrolment],
       synchronize: true,
     }),
     MulterModule.register({ dest: './uploads' }),
@@ -54,7 +54,15 @@ import { EnrolmentService } from './enrolment/enrolment.service';
       secret: jwtConstant.secret,
       signOptions: { expiresIn: '1h' },
     }),
-    TypeOrmModule.forFeature([Student, Teacher, Admin, Domain, Course, Otp,Enrolment]),
+    TypeOrmModule.forFeature([
+      Student,
+      Teacher,
+      Admin,
+      Domain,
+      Course,
+      Otp,
+      Enrolment,
+    ]),
     AuthModule,
     StudentsModule,
     TeachersModule,
@@ -67,7 +75,6 @@ import { EnrolmentService } from './enrolment/enrolment.service';
   ],
   controllers: [
     AdminController,
-    UploadController,
     TeachersController,
     StudentsController,
     DomainController,
@@ -83,6 +90,7 @@ import { EnrolmentService } from './enrolment/enrolment.service';
     OtpService,
     MailService,
     EnrolmentService,
+    StudentsService,
   ],
 })
 export class AppModule {}

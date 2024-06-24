@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class RemoveCourseDto {
@@ -5,5 +6,5 @@ export class RemoveCourseDto {
   @IsEmail()
   student_id: string;
   @IsNotEmpty()
-  course_code: string;
+  coursecode: string;
 }

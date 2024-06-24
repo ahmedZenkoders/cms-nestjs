@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { CourseService } from './courses.service';
 import { CoursesController } from './courses.controller';
@@ -7,8 +8,8 @@ import { Teacher } from 'src/teachers/entities/teacher';
 import { TeachersService } from 'src/teachers/teachers.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Course,Teacher])],
-  providers: [CourseService,TeachersService],
+  imports: [TypeOrmModule.forFeature([Course, Teacher])],
+  providers: [CourseService, TeachersService],
   controllers: [CoursesController],
 })
 export class CoursesModule {}

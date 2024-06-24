@@ -84,6 +84,7 @@ export class AuthService {
       updated_at: new Date(Date.now()),
     });
 
+    await this.teacherRepository.save(user);
     return { data: user };
   }
 
