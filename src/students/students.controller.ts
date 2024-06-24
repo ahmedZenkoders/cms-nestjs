@@ -22,50 +22,66 @@ import { Role } from 'src/enum/role.enum';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 import { StudentsService } from './students.service';
+import { UpdateStudentDto } from './dto/updateStudent.dto';
+import { CourseService } from 'src/courses/courses.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.student)
+
 @Controller('student')
 export class StudentsController {
   constructor(
     private readonly enrolmentService: EnrolmentService,
     private readonly studentService: StudentsService,
+    private readonly courseService:CourseService
   ) {}
+  @Roles(Role.student)
   @Post('/addEnrolment')
   async Create(@Body() createEnrolmentDto: CreateEnrolmentDto) {
     return this.enrolmentService.CreateEnrolment(createEnrolmentDto);
   }
-
+  @Roles(Role.student)
   @Delete('/dropCourse')
   async Drop(@Body() removeCourseDto: RemoveCourseDto) {
     HttpCode(HttpStatus.OK);
     return this.enrolmentService.RemoveCourse(removeCourseDto);
   }
-
+  @Roles(Role.student)
   @Get('/getEnrolmentsbyEmail')
   async Get(@Body('email') email: string) {
     HttpCode(HttpStatus.OK);
     return this.enrolmentService.GetAllEnrolments(email);
   }
-
-  @Patch('/updateprofile/:email')
+  @Roles(Role.student)
+  @Patch('/updateprofilepicture/:email')
   @UseInterceptors(FileInterceptor('image'))
   async updateStudentProfilePicture(
     @Param('email') email: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    try {
       const updatedImageUrl =
         await this.studentService.updateStudentProfilePicture(email, file);
       return {
         message: 'Student profile picture updated successfully',
         imageUrl: updatedImageUrl,
-      };
-    } catch (error) {
-      console.log(error.message);
-      throw new Error(
-        `Failed to update student profile picture: ${error.message}`,
-      );
     }
   }
+  @Roles(Role.student)
+  @Patch('/updateProfile/:email')
+  UpdateProfile(
+    @Param('email') email: string,
+    @Body() updateStudentDto: UpdateStudentDto,
+  ) {
+    return this.studentService.updateStudentProfile(email,updateStudentDto);
+  }
+  @Roles(Role.student)
+  @Get('/viewProfile/:email')
+  async ViewProfile(@Param('email') email: string) {
+    return await this.studentService.ViewProfileDetails(email);
+  }
+  @Roles(Role.student)
+  @Get('/viewCourses')
+    async ViewAllCourses(){
+      return await this.courseService.getAllCourses();
+    }
+  
 }

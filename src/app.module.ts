@@ -35,6 +35,8 @@ import { EnrolmentModule } from './enrolment/enrolment.module';
 import { Enrolment } from './enrolment/entities/enrolment';
 import { EnrolmentService } from './enrolment/enrolment.service';
 import { StudentsService } from './students/students.service';
+import { TeachersService } from './teachers/teachers.service';
+import { AdminService } from './admin/admin.service';
 
 @Module({
   imports: [
@@ -91,6 +93,7 @@ import { StudentsService } from './students/students.service';
     MailService,
     EnrolmentService,
     StudentsService,
+    TeachersService,AdminService  
   ],
 })
 export class AppModule {}

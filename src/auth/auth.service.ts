@@ -129,6 +129,7 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid Password');
     }
+    
   }
   async teacherLogin(loginteacherdto: LoginTeacherDto) {
     const user = await this.teacherRepository.findOneBy({
@@ -144,6 +145,11 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid Password');
     }
+    if(user.is_suspended===true){
+      throw new UnauthorizedException("Can't Login.You have been suspended")
+    }
+
+    return {message:"Logged in successfully",data:user}
   }
   async studentLogin(loginstudentdto: LoginStudentDto) {
     const user = await this.studentRepository.findOneBy({
@@ -160,5 +166,10 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid Password');
     }
+    if(user.is_suspended===true){
+      throw new UnauthorizedException("Can't Login.You have been suspended")
+    }
+
+    return {message:"Logged in successfully",data:user}
   }
 }

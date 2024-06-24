@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 import {
   BadRequestException,
+  HttpCode,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,12 +13,24 @@ import { PaginationSearchDto } from './dto/pagination-search.dto';
 import { UpdateStudentDto } from './dto/updateStudent.dto';
 import axios from 'axios';
 import * as FormData from 'form-data';
+import { Roles } from 'src/decorator/role.decorator';
+import { Role } from 'src/enum/role.enum';
 
 @Injectable()
 export class StudentsService {
   constructor(
     @InjectRepository(Student) private StudentRepository: Repository<Student>,
   ) {}
+
+  @Roles(Role.student)
+  async ViewProfileDetails(email: string) {
+    const studentProfile = await this.StudentRepository.findOneBy({
+      email: email,
+    });
+    return { student: studentProfile };
+  }
+
+
   async getAllStudents(paginationSearchDto: PaginationSearchDto) {
     try {
       const { page, limit, search } = paginationSearchDto;
@@ -43,13 +57,14 @@ export class StudentsService {
     }
   }
 
-  async updateStudentProfile(updateStudentDto: UpdateStudentDto) {
+  @Roles(Role.student)
+  async updateStudentProfile(email: string,updateStudentDto: UpdateStudentDto) {
     const student = await this.StudentRepository.findOne({
-      where: { email: updateStudentDto.email },
+      where: { email: email },
     });
     if (!student) {
       throw new NotFoundException(
-        `Student with email ${updateStudentDto.email} not found`,
+        `Student with email ${email} not found`,
       );
     }
 
@@ -58,6 +73,7 @@ export class StudentsService {
     return student;
   }
 
+  @Roles(Role.student)
   async updateStudentProfilePicture(email: string, image: Express.Multer.File) {
     const student = await this.StudentRepository.findOne({
       where: { email: email },
