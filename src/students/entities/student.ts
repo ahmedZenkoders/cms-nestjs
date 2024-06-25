@@ -1,7 +1,15 @@
 /* eslint-disable prettier/prettier */
+import { Appointment } from 'src/appointments/entities/appointment';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { Teacher } from 'src/teachers/entities/teacher';
-import { Entity, PrimaryColumn, Column, OneToMany,ManyToOne ,JoinColumn} from 'typeorm';
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity({ name: 'students' })
 export class Student {
@@ -40,13 +48,15 @@ export class Student {
 
   @Column({ default: 'student' })
   role: string;
-  
+
   @OneToMany(() => Enrolment, (enrolment) => enrolment.course_code)
   enrolments: Enrolment;
+
+  @OneToMany(() => Appointment, (appointment) => appointment.student_id)
+  @JoinColumn({ name: 'appointment_id' })
+  appointments: Appointment;
 
   @ManyToOne(() => Teacher, (teacher) => teacher.courses)
   @JoinColumn({ name: 'teacher_id' })
   teacher_id: Teacher;
 }
-
-

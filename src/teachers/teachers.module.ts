@@ -10,10 +10,20 @@ import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { EnrolmentService } from 'src/enrolment/enrolment.service';
 import { Student } from 'src/students/entities/student';
 import { StudentsService } from 'src/students/students.service';
+import { Slot } from 'src/slots/entities/slots';
+import { SlotService } from 'src/slots/slots.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Teacher, Course,Enrolment,Student])],
+  imports: [
+    TypeOrmModule.forFeature([Teacher, Course, Enrolment, Student, Slot]),
+  ],
   controllers: [TeachersController],
-  providers: [TeachersService, CourseService,EnrolmentService,StudentsService],
+  providers: [
+    TeachersService,
+    CourseService,
+    EnrolmentService,
+    StudentsService,
+    SlotService,
+  ],
 })
 export class TeachersModule {}

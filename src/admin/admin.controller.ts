@@ -16,22 +16,24 @@ import { CreateDomainDto } from 'src/domain/dto/createDomain.dto';
 import { Role } from 'src/enum/role.enum';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/role.guard';
+import { SlotService } from 'src/slots/slots.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.admin)
 @Controller('admin')
 export class AdminController {
   constructor(
     private domainService: DomainService,
     private courseService: CourseService,
+    private slotService: SlotService,
   ) {}
-
+  @Roles(Role.admin)
   @Post('addDomain')
   async addDomain(@Body() createdomaindto: CreateDomainDto) {
     const domain = await this.domainService.addAllowedDomain(createdomaindto);
     HttpCode(HttpStatus.CREATED);
     return domain;
   }
+  @Roles(Role.admin)
   @Post('removeDomain')
   async removeDomain(@Body() createdomaindto: CreateDomainDto) {
     const domain =
@@ -39,10 +41,17 @@ export class AdminController {
     HttpCode(HttpStatus.OK);
     return domain;
   }
+  @Roles(Role.admin)
   @Get('getCourses')
   async getAllCourses() {
     HttpCode(HttpStatus.ACCEPTED);
 
     return this.courseService.getAllCourses();
+  }
+  @Roles(Role.admin)
+  @Get()
+  async getAllSlots() {
+    const slots = await this.slotService.getAllSlots();
+    return { success: true, data: slots };
   }
 }

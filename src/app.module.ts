@@ -35,6 +35,14 @@ import { EnrolmentModule } from './enrolment/enrolment.module';
 import { Enrolment } from './enrolment/entities/enrolment';
 import { EnrolmentService } from './enrolment/enrolment.service';
 import { StudentsService } from './students/students.service';
+import { SlotsController } from './slots/slots.controller';
+import { SlotsModule } from './slots/slots.module';
+import { AppointmentsService } from './appointments/appointments.service';
+import { AppointmentsController } from './appointments/appointments.controller';
+import { AppointmentsModule } from './appointments/appointments.module';
+import { Appointment } from './appointments/entities/appointment';
+import { Slot } from './slots/entities/slots';
+import { SlotService } from './slots/slots.service';
 
 @Module({
   imports: [
@@ -45,7 +53,17 @@ import { StudentsService } from './students/students.service';
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
-      entities: [Student, Teacher, Admin, Domain, Course, Otp, Enrolment],
+      entities: [
+        Student,
+        Teacher,
+        Admin,
+        Domain,
+        Course,
+        Otp,
+        Enrolment,
+        Appointment,
+        Slot,
+      ],
       synchronize: true,
     }),
     MulterModule.register({ dest: './uploads' }),
@@ -62,6 +80,8 @@ import { StudentsService } from './students/students.service';
       Course,
       Otp,
       Enrolment,
+      Appointment,
+      Slot,
     ]),
     AuthModule,
     StudentsModule,
@@ -72,6 +92,8 @@ import { StudentsService } from './students/students.service';
     UploadModule,
     OtpModule,
     EnrolmentModule,
+    SlotsModule,
+    AppointmentsModule,
   ],
   controllers: [
     AdminController,
@@ -80,6 +102,8 @@ import { StudentsService } from './students/students.service';
     DomainController,
     OtpController,
     CoursesController,
+    SlotsController,
+    AppointmentsController,
   ],
   providers: [
     DomainService,
@@ -91,6 +115,8 @@ import { StudentsService } from './students/students.service';
     MailService,
     EnrolmentService,
     StudentsService,
+    AppointmentsService,
+    SlotService,
   ],
 })
 export class AppModule {}

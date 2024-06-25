@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
+import { Appointment } from 'src/appointments/entities/appointment';
 import { Course } from 'src/courses/entities/course';
-import { Entity, PrimaryColumn, Column ,OneToMany} from 'typeorm';
+import { Slot } from 'src/slots/entities/slots';
+
+import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
 
 @Entity({ name: 'teachers' })
 export class Teacher {
@@ -39,7 +42,13 @@ export class Teacher {
 
   @Column({ default: 'teacher' })
   role: string;
-  
+
   @OneToMany(() => Course, (course) => course.teacher_id)
   courses: Course;
+
+  @OneToMany(() => Slot, (slot) => slot.teacher_id)
+  slots: Slot;
+
+  @OneToMany(() => Appointment, (appointment) => appointment.teacher_id)
+  appointment: Appointment;
 }
