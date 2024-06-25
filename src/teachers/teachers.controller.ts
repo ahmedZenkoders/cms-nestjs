@@ -9,7 +9,11 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CourseService } from 'src/courses/courses.service';
 import { CreateCourseDto } from 'src/courses/dto/createCourse.dto';
 import { UpdateCourseDto } from 'src/courses/dto/updateCourse.dto';
@@ -29,6 +33,7 @@ export class TeachersController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
+  @Roles(Role.teacher)
   @Roles(Role.teacher)
   @Get('/teachersEnrolment')
   async getEnrolmentsbyEmail(@Body('email') email: string) {
