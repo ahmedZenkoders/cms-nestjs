@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  CreateDateColumn
 } from 'typeorm';
 
 import { Student } from 'src/students/entities/student';
@@ -29,7 +30,7 @@ export class Appointment {
   @Column()
   appointment_date: Date;
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date;
 
   @ManyToOne(() => Student, (student) => student.appointments)

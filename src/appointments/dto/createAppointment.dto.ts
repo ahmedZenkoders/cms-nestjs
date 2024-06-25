@@ -1,14 +1,15 @@
 /* eslint-disable prettier/prettier */
 
+import { IsEmail } from '@nestjs/class-validator';
 import { IsDate, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
 import { AppointmentStatus } from 'src/enum/appointment.enum';
 
-export class AppointmentDto {
-  @IsNumber()
-  student_id: number;
+export class CreateAppointmentDto {
+  @IsEmail()
+  student_id: string;
 
-  @IsNumber()
-  teacher_id: number;
+  @IsEmail()
+  teacher_id: string;
 
   @IsNumber()
   slot_id: number;
@@ -19,4 +20,5 @@ export class AppointmentDto {
   @IsDate()
   @IsNotEmpty()
   appointment_date: Date;
+
 }

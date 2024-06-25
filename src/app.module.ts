@@ -35,7 +35,6 @@ import { EnrolmentModule } from './enrolment/enrolment.module';
 import { Enrolment } from './enrolment/entities/enrolment';
 import { EnrolmentService } from './enrolment/enrolment.service';
 import { StudentsService } from './students/students.service';
-<<<<<<< HEAD
 import { SlotsController } from './slots/slots.controller';
 import { SlotsModule } from './slots/slots.module';
 import { AppointmentsService } from './appointments/appointments.service';
@@ -44,17 +43,13 @@ import { AppointmentsModule } from './appointments/appointments.module';
 import { Appointment } from './appointments/entities/appointment';
 import { Slot } from './slots/entities/slots';
 import { SlotService } from './slots/slots.service';
-=======
-import { TeachersService } from './teachers/teachers.service';
-import { AdminService } from './admin/admin.service';
->>>>>>> 87668a9c10bcb6ae5a33087c157c5a404f99ca3d
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5432,
+      port: 5434,
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
@@ -120,12 +115,8 @@ import { AdminService } from './admin/admin.service';
     MailService,
     EnrolmentService,
     StudentsService,
-<<<<<<< HEAD
     AppointmentsService,
     SlotService,
-=======
-    TeachersService,AdminService  
->>>>>>> 87668a9c10bcb6ae5a33087c157c5a404f99ca3d
   ],
 })
 export class AppModule {}
