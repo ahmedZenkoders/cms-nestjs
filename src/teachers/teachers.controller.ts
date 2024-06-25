@@ -9,11 +9,14 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AppointmentsService } from 'src/appointments/appointments.service';
+import { UpdateAppointmentDto } from 'src/appointments/dto/updateAppointment.dto';
 import { CourseService } from 'src/courses/courses.service';
 import { CreateCourseDto } from 'src/courses/dto/createCourse.dto';
 import { UpdateCourseDto } from 'src/courses/dto/updateCourse.dto';
@@ -30,6 +33,7 @@ export class TeachersController {
     private readonly enrolmentsService: EnrolmentService,
     private readonly courseService: CourseService,
     private readonly slotService: SlotService,
+    private appointmentService: AppointmentsService
   ) {}
 
   @HttpCode(HttpStatus.OK)
@@ -84,5 +88,27 @@ export class TeachersController {
   async deleteSlot(@Param('id') id: string) {
     const result = await this.slotService.deleteSlot(Number(id));
     return { success: true, data: result };
+  }
+
+  @Put('/updateAppointment:id')
+  async updateAppointment(@Param('id') id: number, @Body() updateAppointmentDto: UpdateAppointmentDto) {
+          const appointment = await this.appointmentService.updateAppointment(id, updateAppointmentDto);
+          return appointment;
+  
+  }
+
+  @Delete('/deleteAppointment/:id')
+  async deleteAppointment(@Param('id') id: number) {
+
+          const result = await this.appointmentService.deleteAppointment(id);
+          return result;
+    
+  }
+
+  @Get('getMyAppointments/:email')
+  async getAppointmentsByTeacher(@Param('email') email: string) {
+          const appointments = await this.appointmentService.getAppointmentsByTeacher(email);
+          return appointments;
+     
   }
 }

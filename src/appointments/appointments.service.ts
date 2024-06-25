@@ -82,4 +82,21 @@ export class AppointmentsService {
         await this.appointmentRepository.delete(appointment.id);
         return {message:"Appointment Deleted Successfully"}
     }
+
+    async getAppointmentsByTeacher(email: string) {
+        const teacher = await this.teacherRepository.findOne({ where: { email } });
+        if (!teacher) {
+            throw new NotFoundException('Teacher not found');
+        }
+        const appointments = await this.appointmentRepository.find({
+            where: { teacher_id: teacher },
+            relations: ['student', 'slot'],
+        });
+
+        if (!appointments) {
+            throw new NotFoundException('No appointments found for this teacher');
+        }
+
+        return appointments;
+    }
 }
