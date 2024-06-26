@@ -7,7 +7,6 @@ import {
   HttpCode,
   UseGuards,
   Get,
-  Param,
 } from '@nestjs/common';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { CourseService } from 'src/courses/courses.service';
@@ -20,15 +19,15 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 import { SlotService } from 'src/slots/slots.service';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
+// @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin')
 export class AdminController {
   constructor(
     private domainService: DomainService,
     private courseService: CourseService,
     private slotService: SlotService,
-    private appointmentService: AppointmentsService
-  ) { }
+    private appointmentService: AppointmentsService,
+  ) {}
   @Roles(Role.admin)
   @Post('addDomain')
   async addDomain(@Body() createdomaindto: CreateDomainDto) {
@@ -62,14 +61,5 @@ export class AdminController {
   async getAllAppointments() {
     const appointments = await this.appointmentService.getAllAppointments();
     return appointments;
-
-  }
-
-  @Get('/getAppointment:id')
-  async getAppointmentById(@Param('id') id: number) {
-
-    const appointment = await this.appointmentService.getAppointmentById(id);
-    return appointment;
-
   }
 }

@@ -15,8 +15,18 @@ import { StudentsService } from 'src/students/students.service';
 import { Student } from 'src/students/entities/student';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { Appointment } from 'src/appointments/entities/appointment';
+import { MailService } from 'src/mail/mail.service';
 @Module({
-  imports: [TypeOrmModule.forFeature([Domain, Course, Teacher, Slot,Student,Appointment])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Domain,
+      Course,
+      Teacher,
+      Slot,
+      Student,
+      Appointment,
+    ]),
+  ],
   providers: [
     AdminService,
     DomainService,
@@ -24,7 +34,8 @@ import { Appointment } from 'src/appointments/entities/appointment';
     TeachersService,
     SlotService,
     StudentsService,
-    AppointmentsService
+    AppointmentsService,
+    MailService,
   ],
   controllers: [AdminController],
 })

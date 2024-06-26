@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+
 import { Appointment } from 'src/appointments/entities/appointment';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { Teacher } from 'src/teachers/entities/teacher';
@@ -53,7 +54,6 @@ export class Student {
   enrolments: Enrolment;
 
   @OneToMany(() => Appointment, (appointment) => appointment.student_id)
-  @JoinColumn({ name: 'appointment_id' })
   appointments: Appointment;
 
   @ManyToOne(() => Teacher, (teacher) => teacher.courses)

@@ -24,15 +24,17 @@ import { RolesGuard } from 'src/guards/role.guard';
 import { StudentsService } from './students.service';
 import { UpdateStudentDto } from './dto/updateStudent.dto';
 import { CourseService } from 'src/courses/courses.service';
+import { AppointmentsService } from 'src/appointments/appointments.service';
+import { CreateAppointmentDto } from 'src/appointments/dto/createAppointment.dto';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-
+// @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('student')
 export class StudentsController {
   constructor(
     private readonly enrolmentService: EnrolmentService,
     private readonly studentService: StudentsService,
-    private readonly courseService:CourseService
+    private readonly courseService: CourseService,
+    private readonly appointmentService: AppointmentsService,
   ) {}
   @Roles(Role.student)
   @Post('/addEnrolment')
@@ -58,12 +60,12 @@ export class StudentsController {
     @Param('email') email: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-      const updatedImageUrl =
-        await this.studentService.updateStudentProfilePicture(email, file);
-      return {
-        message: 'Student profile picture updated successfully',
-        imageUrl: updatedImageUrl,
-    }
+    const updatedImageUrl =
+      await this.studentService.updateStudentProfilePicture(email, file);
+    return {
+      message: 'Student profile picture updated successfully',
+      imageUrl: updatedImageUrl,
+    };
   }
   @Roles(Role.student)
   @Patch('/updateProfile/:email')
@@ -71,7 +73,7 @@ export class StudentsController {
     @Param('email') email: string,
     @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    return this.studentService.updateStudentProfile(email,updateStudentDto);
+    return this.studentService.updateStudentProfile(email, updateStudentDto);
   }
   @Roles(Role.student)
   @Get('/viewProfile/:email')
@@ -80,8 +82,21 @@ export class StudentsController {
   }
   @Roles(Role.student)
   @Get('/viewCourses')
-    async ViewAllCourses(){
-      return await this.courseService.getAllCourses();
-    }
-  
+  async ViewAllCourses() {
+    return await this.courseService.getAllCourses();
+  }
+
+  @Post('/createAppointment')
+  async CreateAppointment(@Body() createAppointmentDto: CreateAppointmentDto) {
+    return await this.appointmentService.createAppointment(
+      createAppointmentDto,
+    );
+  }
+
+  @Get('getMyAppointments/:email')
+  async getAppointmentsByEmail(@Param('email') email: string) {
+    const appointments =
+      await this.appointmentService.getAppointmentsByStudent(email);
+    return appointments;
+  }
 }

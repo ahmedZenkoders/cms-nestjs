@@ -1,24 +1,24 @@
 /* eslint-disable prettier/prettier */
-
-import { IsEmail } from '@nestjs/class-validator';
-import { IsDate, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
-import { AppointmentStatus } from 'src/enum/appointment.enum';
+import { IsString } from '@nestjs/class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class CreateAppointmentDto {
   @IsEmail()
+  @IsNotEmpty()
   student_id: string;
 
   @IsEmail()
+  @IsNotEmpty()
   teacher_id: string;
 
-  @IsNumber()
-  slot_id: number;
-
-  @IsEnum(AppointmentStatus)
-  status: AppointmentStatus;
-
-  @IsDate()
   @IsNotEmpty()
   appointment_date: Date;
 
+  @IsString()
+  @IsNotEmpty()
+  start_time: string;
+
+  @IsString()
+  @IsNotEmpty()
+  end_time: string;
 }

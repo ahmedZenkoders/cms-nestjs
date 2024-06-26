@@ -1,8 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 export enum AppointmentStatus {
-  Approved = 'approved',
-  Pending = 'pending',
-  Rejected = 'rejected',
-  Booked = 'booked',
+  Approved = 'Approved',
+  Pending = 'Pending',
+  Rejected = 'Rejected',
 }

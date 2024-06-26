@@ -14,10 +14,18 @@ import { Slot } from 'src/slots/entities/slots';
 import { SlotService } from 'src/slots/slots.service';
 import { Appointment } from 'src/appointments/entities/appointment';
 import { AppointmentsService } from 'src/appointments/appointments.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Teacher, Course, Enrolment, Student, Slot,Appointment]),
+    TypeOrmModule.forFeature([
+      Teacher,
+      Course,
+      Enrolment,
+      Student,
+      Slot,
+      Appointment,
+    ]),
   ],
   controllers: [TeachersController],
   providers: [
@@ -26,7 +34,8 @@ import { AppointmentsService } from 'src/appointments/appointments.service';
     EnrolmentService,
     StudentsService,
     SlotService,
-    AppointmentsService
+    AppointmentsService,
+    MailService,
   ],
 })
 export class TeachersModule {}

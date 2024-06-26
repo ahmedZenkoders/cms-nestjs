@@ -5,20 +5,28 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  OneToOne,
-  CreateDateColumn
 } from 'typeorm';
 
 import { Student } from 'src/students/entities/student';
-
 import { AppointmentStatus } from 'src/enum/appointment.enum';
 import { Teacher } from 'src/teachers/entities/teacher';
-import { Slot } from 'src/slots/entities/slots';
 
 @Entity()
 export class Appointment {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'date' })
+  appointment_date: Date;
+
+  @Column({ type: 'timestamptz' })
+  created_at: Date;
+
+  @Column({ type: 'time' })
+  start_time: string;
+
+  @Column({ type: 'time' })
+  end_time: string;
 
   @Column({
     type: 'enum',
@@ -27,12 +35,6 @@ export class Appointment {
   })
   status: AppointmentStatus;
 
-  @Column()
-  appointment_date: Date;
-
-  @CreateDateColumn()
-  created_at: Date;
-
   @ManyToOne(() => Student, (student) => student.appointments)
   @JoinColumn({ name: 'student_id' })
   student_id: Student;
@@ -40,8 +42,4 @@ export class Appointment {
   @ManyToOne(() => Teacher, (teacher) => teacher.appointment)
   @JoinColumn({ name: 'teacher_id' })
   teacher_id: Teacher;
-
-  @OneToOne(() => Slot)
-  @JoinColumn({ name: 'slot_id' })
-  slot_id: Slot;
 }
