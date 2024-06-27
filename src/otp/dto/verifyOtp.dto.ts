@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { IsEmail } from '@nestjs/class-validator';
-import { IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsEmail, IsString } from '@nestjs/class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class VerifyOtpDto {
   @IsNotEmpty({ message: 'OTP is required' })
-  @IsNumberString({}, { message: 'OTP must be a numeric string' })
+  @IsString({message: 'OTP must be a numeric string'})
   otp: string;
 
   @IsEmail({}, { message: 'Invalid email address' })

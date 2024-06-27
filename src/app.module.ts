@@ -43,6 +43,14 @@ import { AppointmentsModule } from './appointments/appointments.module';
 import { Appointment } from './appointments/entities/appointment';
 import { Slot } from './slots/entities/slots';
 import { SlotService } from './slots/slots.service';
+import { ChatModule } from './chat/chat.module';
+import { MessagesModule } from './messages/messages.module';
+import { Chat } from './chat/entities/chat';
+import { Message } from './messages/entities/message';
+import { MessagesController } from './messages/messages.controller';
+import { ChatController } from './chat/chat.controller';
+import { ChatService } from './chat/chat.service';
+import { MessagesService } from './messages/messages.service';
 
 @Module({
   imports: [
@@ -63,6 +71,8 @@ import { SlotService } from './slots/slots.service';
         Enrolment,
         Appointment,
         Slot,
+        Chat,
+        Message
       ],
       synchronize: true,
     }),
@@ -82,6 +92,8 @@ import { SlotService } from './slots/slots.service';
       Enrolment,
       Appointment,
       Slot,
+      Message,
+      Chat
     ]),
     AuthModule,
     StudentsModule,
@@ -94,6 +106,8 @@ import { SlotService } from './slots/slots.service';
     EnrolmentModule,
     SlotsModule,
     AppointmentsModule,
+    ChatModule,
+    MessagesModule,
   ],
   controllers: [
     AdminController,
@@ -104,6 +118,8 @@ import { SlotService } from './slots/slots.service';
     CoursesController,
     SlotsController,
     AppointmentsController,
+    MessagesController,
+    ChatController
   ],
   providers: [
     DomainService,
@@ -117,6 +133,8 @@ import { SlotService } from './slots/slots.service';
     StudentsService,
     AppointmentsService,
     SlotService,
+    ChatService,
+    MessagesService
   ],
 })
 export class AppModule {}

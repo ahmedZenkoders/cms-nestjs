@@ -2,6 +2,7 @@
 
 import { Appointment } from 'src/appointments/entities/appointment';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
+import { Message } from 'src/messages/entities/message';
 import { Teacher } from 'src/teachers/entities/teacher';
 import {
   Entity,
@@ -57,6 +58,11 @@ export class Student {
   appointments: Appointment;
 
   @ManyToOne(() => Teacher, (teacher) => teacher.courses)
-  @JoinColumn({ name: 'teacher_id' })
   teacher_id: Teacher;
+
+  @OneToMany(()=>Message,(messages)=>messages.senderStudent)
+  sentMessages:Message;
+
+  @OneToMany(()=>Message,(messages)=>messages.receiverStudent)
+  receiveMessages:Message;
 }

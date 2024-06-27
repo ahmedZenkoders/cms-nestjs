@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Appointment } from 'src/appointments/entities/appointment';
 import { Course } from 'src/courses/entities/course';
+import { Message } from 'src/messages/entities/message';
 import { Slot } from 'src/slots/entities/slots';
 
 import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
@@ -51,4 +52,10 @@ export class Teacher {
 
   @OneToMany(() => Appointment, (appointment) => appointment.teacher_id)
   appointment: Appointment;
+
+  @OneToMany(()=>Message,(messages)=>messages.senderTeacher)
+  sentMessages:Message;
+
+  @OneToMany(()=>Message,(messages)=>messages.receiverTeacher)
+  receiveMessages:Message;
 }

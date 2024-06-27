@@ -11,7 +11,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { AppointmentsService } from 'src/appointments/appointments.service';
-import { AcceptRejectDto } from 'src/appointments/dto/acceptReject.dto';
+import { ApproveRejectDto } from 'src/appointments/dto/acceptReject.dto';
 
 import { CourseService } from 'src/courses/courses.service';
 import { CreateCourseDto } from 'src/courses/dto/createCourse.dto';
@@ -92,18 +92,12 @@ export class TeachersController {
     return appointments;
   }
 
-  @Patch('/approveRejectStudent/:id')
+  @Patch('/approveRejectAppointment/:id')
   async approveRejectAppointment(
     @Param('id') id: number,
-    @Body() acceptRejectDto: AcceptRejectDto,
+    @Body() approveRejectDto: ApproveRejectDto,
   ) {
-    const result = await this.appointmentService.ApproveRejectAppointment(
-      id,
-      acceptRejectDto,
-    );
-    return {
-      message: `Appointment ${acceptRejectDto.status} Successfully for ${acceptRejectDto.email}`,
-      data: result,
-    };
+
+    return await this.appointmentService.ApproveRejectAppointment(id,approveRejectDto);
   }
 }

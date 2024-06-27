@@ -27,18 +27,28 @@ export class MailService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  async sendAppointmentEmail(appointment: Appointment, status: string) {
-    const studentEmail = appointment.student_id.email;
-    const teacherName = appointment.teacher_id.username; 
-    const appointmentDate = appointment.appointment_date; 
-    console.log(studentEmail, status, teacherName);
+  async sendAppointmentEmail(email:string, status: string) {
+    // console.log("Appointment:", appointment);
+    // const studentEmail = appointment.student_id?.email;
+    // const teacherName = appointment.teacher_id?.username;
+    // const appointmentDate = appointment?.appointment_date;
+    // console.log(studentEmail);
+    // console.log(teacherName);
+    // console.log(appointmentDate);
+    console.log("Email from appointment service",email)
+
+    // if (!studentEmail || !teacherName) {
+    //   throw new Error('Student email or teacher name is undefined.');
+    // }
+
     const mailOptions = {
-        from: 'ahmed.zenkoders@gmail.com',
-        to: studentEmail,
-        subject: 'Appointment Status Update',
-        text: `Your appointment with ${teacherName} has been ${status.toLowerCase()} on ${appointmentDate}.`,
-        html: `<p>Your appointment with <b>${teacherName}</b> on <b>${appointmentDate}</b> has been <b>${status.toLowerCase()}</b>.</p>`,
+      from: 'ahmed.zenkoders@gmail.com',
+      to: email,
+      subject: 'Appointment Status Update',
+      text: `Your appointment with  has been on `,
+      html: `<p>Your appointment with <b></b> on <b></b> has been <b>${status.toLowerCase()}</b>.</p>`,
     };
+
     await this.transporter.sendMail(mailOptions);
 }
 

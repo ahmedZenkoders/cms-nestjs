@@ -2,8 +2,8 @@
 import { IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
 import { AppointmentStatus } from 'src/enum/appointment.enum';
 
-export class AcceptRejectDto {
-  @IsNotEmpty()
+export class ApproveRejectDto {
+  @IsNotEmpty({message:"Student Email is required"})
   @IsEmail()
   email: string;
 

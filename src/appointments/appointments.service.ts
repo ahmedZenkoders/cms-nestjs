@@ -2,13 +2,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Appointment } from './entities/appointment';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository,Not } from 'typeorm';
 import { CreateAppointmentDto } from './dto/createAppointment.dto';
 import { Student } from 'src/students/entities/student';
 import { Teacher } from 'src/teachers/entities/teacher';
 import { AppointmentStatus } from 'src/enum/appointment.enum';
 import { MailService } from 'src/mail/mail.service';
-import { AcceptRejectDto } from './dto/acceptReject.dto';
+import { ApproveRejectDto } from './dto/acceptReject.dto';
 
 @Injectable()
 export class AppointmentsService {
@@ -69,7 +69,14 @@ export class AppointmentsService {
 
         return {
             message: 'Appointment Created Successfully',
-            data: appointment,
+            data: {
+                Date: appointment.appointment_date,
+                Student: appointment.student_id.email,
+                Teacher: appointment.teacher_id.email,
+                Status: appointment.status,
+                Created_at: appointment.created_at
+            }
+
         };
     }
     async getAllAppointments() {
@@ -89,7 +96,7 @@ export class AppointmentsService {
             where: { teacher_id: teacher },
         });
 
-        if (!appointments) {
+        if (!appointments || appointments.length === 0) {
             throw new NotFoundException('No appointments found for this teacher');
         }
 
@@ -105,37 +112,48 @@ export class AppointmentsService {
             where: { student_id: student },
         });
 
-        if (!appointments) {
+        if (!appointments || appointments.length === 0) {
             throw new NotFoundException('No appointments found for this teacher');
         }
 
         return appointments;
     }
 
-        async ApproveRejectAppointment(id: number, acceptRejectDto: AcceptRejectDto) {
-            const appointment = await this.appointmentRepository.findOne({ where: { id } });
-            if (!appointment) {
-                throw new NotFoundException('Appointment Not Found');
-            }
+    async ApproveRejectAppointment(id: number, approveRejectDto: ApproveRejectDto) {
+        const appointment = await this.appointmentRepository.findOne({ 
+            where: { id }, 
+            relations: ['teacher_id', 'student_id'] 
+        });
+        
+    
+        if (!appointment) {
+            throw new NotFoundException('Appointment Not Found');
+        }
+   
+        if (!appointment.student_id || !appointment.teacher_id) {
+            throw new NotFoundException('Related student or teacher not found');
+        }
+    
+        const student = await this.studentRepository.findOne({ where: { email: appointment.student_id.email } });
+        if (!student) { 
+            throw new NotFoundException('Student not found');
+        }
 
-            const student = await this.studentRepository.findOne({ where: { email: acceptRejectDto.email } });
-            if (!student) {
-                throw new NotFoundException('Student not found');
-            }
+        const teacher = await this.teacherRepository.findOneBy({ email: appointment.teacher_id.email });
+        if (!teacher) {
+            throw new NotFoundException('Teacher not found');
+        }
 
-            const teacher = await this.teacherRepository.findOne({ where: { email: appointment.teacher_id.email } });
-            if (!teacher) {
-                throw new NotFoundException('Teacher not found');
+        if (approveRejectDto.status === 'Approved') {
+            if (appointment.status === 'Approved') {
+                throw new BadRequestException("Appointment Already Approved");
             }
-
-            if (acceptRejectDto.status === 'Approved' && appointment.status === 'Approved') {
-                throw new BadRequestException("Appointment Already Approved")
+            if (appointment.status === 'Rejected') {
+                throw new BadRequestException("Rejected Appointment Cannot Be Approved");
             }
-            if (acceptRejectDto.status === 'Rejected' && appointment.status === 'Rejected') {
-                throw new BadRequestException("Appointment Already Rejected")
-            }
-            if (acceptRejectDto.status === 'Approved' && appointment.status === 'Pending') {
+            if (appointment.status === 'Pending') {
                 appointment.status = AppointmentStatus.Approved;
+                
                 const sameAppointments = await this.appointmentRepository.find({
                     where: {
                         teacher_id: teacher,
@@ -143,26 +161,40 @@ export class AppointmentsService {
                         start_time: appointment.start_time,
                         end_time: appointment.end_time,
                         status: AppointmentStatus.Pending,
+                        id:Not(id)
+                        
                     },
                 });
-            
-               if(!sameAppointments || sameAppointments.length>=1){
-                for (const sameAppointment of sameAppointments) {
-                    sameAppointment.status = AppointmentStatus.Rejected;
-                    await this.appointmentRepository.save(sameAppointment);
-                    await this.mailService.sendAppointmentEmail( sameAppointment,'Rejected');
+    
+                if (sameAppointments) {
+                    for (const sameAppointment of sameAppointments) {
+                        sameAppointment.status = AppointmentStatus.Rejected;
+                        await this.appointmentRepository.save(sameAppointment);
+                        await this.mailService.sendAppointmentEmail(sameAppointment.student_id.email, 'Rejected');
+                    }
                 }
-               }
             }
-            else if (
-                acceptRejectDto.status === 'Rejected' &&
-                appointment.status === 'Pending'
-            ) {
+        } else if (approveRejectDto.status === 'Rejected') {
+            if (appointment.status === 'Rejected') {
+                throw new BadRequestException("Appointment Already Rejected");
+            }
+            if (appointment.status === 'Pending') {
                 appointment.status = AppointmentStatus.Rejected;
             }
-            this.appointmentRepository.save(appointment);
-            await this.mailService.sendAppointmentEmail(appointment, acceptRejectDto.status);
-            return { appointment };
         }
+    
+        await this.appointmentRepository.save(appointment);
+        console.log('Appointment:', appointment);
+ 
+        await this.mailService.sendAppointmentEmail(approveRejectDto.email,approveRejectDto.status);
+    
+        return {
+            appointment_id: appointment.id,
+            student_id: appointment.student_id.email,
+            teacher_id: appointment.teacher_id.email,
+            appointment_date: appointment.appointment_date,
+            status: appointment.status,
+        };
+    }    
 }
 
