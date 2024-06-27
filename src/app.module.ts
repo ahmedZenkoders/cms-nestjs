@@ -49,7 +49,7 @@ import { SlotService } from './slots/slots.service';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5432,
+      port: 5434,
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',

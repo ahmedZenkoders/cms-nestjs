@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { Appointment } from 'src/appointments/entities/appointment';
 
 @Injectable()
 export class MailService {
@@ -26,15 +27,19 @@ export class MailService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  async sendAppointmentEmail(email: string, appointment: any) {
-    console.log(appointment);
+  async sendAppointmentEmail(appointment: Appointment, status: string) {
+    const studentEmail = appointment.student_id.email;
+    const teacherName = appointment.teacher_id.username; 
+    const appointmentDate = appointment.appointment_date; 
+    console.log(studentEmail, status, teacherName);
     const mailOptions = {
-      from: 'ahmed.zenkoders@gmail.com',
-      to: email,
-      subject: 'Appointment Scheduled',
-      text: `Your appointment with TEACHER has been scheduled on ${appointment.appointment_date}.`,
-      html: `<p>Your appointment with <b>Teacher</b> on <b>${appointment.appointment_date}</b> has been scheduled.</p>`,
+        from: 'ahmed.zenkoders@gmail.com',
+        to: studentEmail,
+        subject: 'Appointment Status Update',
+        text: `Your appointment with ${teacherName} has been ${status.toLowerCase()} on ${appointmentDate}.`,
+        html: `<p>Your appointment with <b>${teacherName}</b> on <b>${appointmentDate}</b> has been <b>${status.toLowerCase()}</b>.</p>`,
     };
     await this.transporter.sendMail(mailOptions);
-  }
+}
+
 }
