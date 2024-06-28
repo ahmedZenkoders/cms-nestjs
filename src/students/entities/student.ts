@@ -4,14 +4,7 @@ import { Appointment } from 'src/appointments/entities/appointment';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { Message } from 'src/messages/entities/message';
 import { Teacher } from 'src/teachers/entities/teacher';
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'students' })
 export class Student {
@@ -60,9 +53,9 @@ export class Student {
   @ManyToOne(() => Teacher, (teacher) => teacher.courses)
   teacher_id: Teacher;
 
-  @OneToMany(()=>Message,(messages)=>messages.senderStudent)
-  sentMessages:Message;
+  @OneToMany(() => Message, (messages) => messages.senderStudent)
+  sentMessages: Message;
 
-  @OneToMany(()=>Message,(messages)=>messages.receiverStudent)
-  receiveMessages:Message;
+  @OneToMany(() => Message, (messages) => messages.receiverStudent)
+  receiveMessages: Message;
 }

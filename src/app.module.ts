@@ -48,16 +48,17 @@ import { MessagesModule } from './messages/messages.module';
 import { Chat } from './chat/entities/chat';
 import { Message } from './messages/entities/message';
 import { MessagesController } from './messages/messages.controller';
-import { ChatController } from './chat/chat.controller';
+import { ChatsController } from './chat/chat.controller';
 import { ChatService } from './chat/chat.service';
 import { MessagesService } from './messages/messages.service';
+import { ChatGateway } from './chat/chat.gateway';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5434,
+      port: 5432,
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
@@ -72,7 +73,7 @@ import { MessagesService } from './messages/messages.service';
         Appointment,
         Slot,
         Chat,
-        Message
+        Message,
       ],
       synchronize: true,
     }),
@@ -93,7 +94,7 @@ import { MessagesService } from './messages/messages.service';
       Appointment,
       Slot,
       Message,
-      Chat
+      Chat,
     ]),
     AuthModule,
     StudentsModule,
@@ -119,7 +120,7 @@ import { MessagesService } from './messages/messages.service';
     SlotsController,
     AppointmentsController,
     MessagesController,
-    ChatController
+    ChatsController,
   ],
   providers: [
     DomainService,
@@ -134,7 +135,8 @@ import { MessagesService } from './messages/messages.service';
     AppointmentsService,
     SlotService,
     ChatService,
-    MessagesService
+    MessagesService,
+    ChatGateway,
   ],
 })
 export class AppModule {}

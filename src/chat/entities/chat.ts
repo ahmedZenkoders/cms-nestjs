@@ -1,6 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { Message } from 'src/messages/entities/message';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,OneToMany } from 'typeorm';
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 
 @Entity({ name: 'chats' })
 export class Chat {
@@ -11,6 +16,5 @@ export class Chat {
   createdAt: Date;
 
   @OneToMany(() => Message, (message) => message.chat_id)
-  message_id: Message;
-
+  messages: Message[];
 }
