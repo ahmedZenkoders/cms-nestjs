@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 import { Appointment } from 'src/appointments/entities/appointment';
+import { Chat } from 'src/chat/entities/chat';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { Message } from 'src/messages/entities/message';
 import { Teacher } from 'src/teachers/entities/teacher';
@@ -58,4 +59,7 @@ export class Student {
 
   @OneToMany(() => Message, (messages) => messages.receiverStudent)
   receiveMessages: Message;
+
+  @OneToMany(()=> Chat,(chat)=> chat.student_id)
+  chat_id:Chat
 }

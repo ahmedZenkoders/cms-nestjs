@@ -1,36 +1,28 @@
-/* eslint-disable prettier/prettier */
-import {
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  OnGatewayInit,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer, OnGatewayInit, SubscribeMessage } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { ChatService } from './chat.service';
-import { CreateMessageDto } from 'src/messages/dto/createMessage.dto';
+import { MessageService } from 'src/messages/messages.service';
+import { CreateMessageDto } from '../messages/dto/createMessage.dto'; 
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit {
-  @WebSocketServer()
-  server: Server;
+  @WebSocketServer() server: Server;
 
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly messageService: MessageService,
+  ) {}
 
   afterInit(server: Server) {
-    this.server = server;
-    this.server.on('connection', (socket) => {
-      console.log(socket.id);
-      console.log('connected');
-    });
+    console.log('WebSocket Gateway initialized');
   }
 
   @SubscribeMessage('newMessage')
-  async onNewMessage(@MessageBody() createMeesageDto: CreateMessageDto) {
-    const newMessage = await this.chatService.createChat(createMeesageDto);
-    this.server.emit('onMessage', {
-      msg: 'New message',
-      content: newMessage,
-    });
+  async handleNewMessage(client: any, createMessageDto: CreateMessageDto){
+    try {
+      const message = await this.messageService.createMessage(createMessageDto);
+      this.server.emit('newMessage', message); 
+    } catch (error) {
+      console.error('Error creating message:', error.message);
+      throw error; 
+    }
   }
 }

@@ -1,25 +1,28 @@
-/* eslint-disable prettier/prettier */
-
-import { IsNotEmpty } from '@nestjs/class-validator';
-import { IsString, IsEmail } from 'class-validator';
+import { IsEmail, IsInt } from '@nestjs/class-validator';
+import { IsNotEmpty, IsString,IsOptional } from 'class-validator';
 
 export class CreateMessageDto {
+  @IsNotEmpty({message:"Cannot send empty message"})
   @IsString()
   content: string;
 
-  @IsString()
-  @IsNotEmpty({ message: 'senderType must be either "student" or "teacher"' })
-  senderType: 'student' | 'teacher';
-
+  @IsOptional()
   @IsEmail()
-  @IsNotEmpty()
-  senderEmail: string;
+  senderStudentId?: string;
 
-  @IsString()
-  @IsNotEmpty({ message: 'receiverType must be either "student" or "teacher"' })
-  receiverType: 'student' | 'teacher';
-
+  @IsOptional()
   @IsEmail()
+  senderTeacherId?: string;
+
+  @IsOptional()
+  @IsEmail()
+  receiverStudentId?: string;
+
+  @IsOptional()
+  @IsEmail()
+  receiverTeacherId?: string;
+
   @IsNotEmpty()
-  receiverEmail: string;
+  @IsInt()
+  chatId: number;
 }

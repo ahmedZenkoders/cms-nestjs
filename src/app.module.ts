@@ -50,7 +50,7 @@ import { Message } from './messages/entities/message';
 import { MessagesController } from './messages/messages.controller';
 import { ChatsController } from './chat/chat.controller';
 import { ChatService } from './chat/chat.service';
-import { MessagesService } from './messages/messages.service';
+import { MessageService } from './messages/messages.service';
 import { ChatGateway } from './chat/chat.gateway';
 
 @Module({
@@ -58,7 +58,7 @@ import { ChatGateway } from './chat/chat.gateway';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5432,
+      port: 5434,
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
@@ -135,8 +135,8 @@ import { ChatGateway } from './chat/chat.gateway';
     AppointmentsService,
     SlotService,
     ChatService,
-    MessagesService,
-    ChatGateway,
+    MessageService,
+   ChatGateway
   ],
 })
 export class AppModule {}

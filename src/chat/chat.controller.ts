@@ -11,13 +11,5 @@ export class ChatsController {
     private readonly chatsGateway: ChatGateway,
   ) {}
 
-  @Post('/chat')
-  async createChatMessage(@Body() createChatDto: CreateChatDto) {
-    const newMessage = await this.chatService.createChat(createChatDto);
-    this.chatsGateway.server.emit('onMessage', {
-      msg: 'New message',
-      content: newMessage,
-    });
-    return newMessage;
-  }
+  
 }

@@ -46,7 +46,7 @@ export class Message {
   @JoinColumn({ name: 'receiver_teacher_id' })
   receiverTeacher: Teacher;
 
-  @ManyToOne(() => Chat, (chat) => chat.messages)
+  @ManyToOne(() => Chat, (chat) => chat.message_id)
   @JoinColumn({ name: 'chat_id' })
   chat_id: Chat;
 }
