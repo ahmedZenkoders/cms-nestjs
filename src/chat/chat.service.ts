@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/createChat.dto';
@@ -17,16 +22,23 @@ export class ChatService {
     private readonly teacherRepository: Repository<Teacher>,
   ) {}
 
-  async createChat(createChatDto: CreateChatDto){
-
-    const student = await this.studentRepository.findOneBy({email:createChatDto.studentId});
+  async createChat(createChatDto: CreateChatDto) {
+    const student = await this.studentRepository.findOneBy({
+      email: createChatDto.studentId,
+    });
     if (!student) {
-      throw new NotFoundException(`Student with ID ${createChatDto.studentId} not found`);
+      throw new NotFoundException(
+        `Student with ID ${createChatDto.studentId} not found`,
+      );
     }
 
-    const teacher = await this.teacherRepository.findOneBy({email:createChatDto.teacherId});
+    const teacher = await this.teacherRepository.findOneBy({
+      email: createChatDto.teacherId,
+    });
     if (!teacher) {
-      throw new NotFoundException(`Teacher with ID ${createChatDto.teacherId} not found`);
+      throw new NotFoundException(
+        `Teacher with ID ${createChatDto.teacherId} not found`,
+      );
     }
 
     const existingChat = await this.chatRepository.findOne({
@@ -37,7 +49,9 @@ export class ChatService {
     });
 
     if (existingChat) {
-      throw new ConflictException(`Chat already exists between Student ${student.email} and Teacher ${teacher.email}`);
+      throw new ConflictException(
+        `Chat already exists between Student ${student.email} and Teacher ${teacher.email}`,
+      );
     }
 
     const newChat = this.chatRepository.create({

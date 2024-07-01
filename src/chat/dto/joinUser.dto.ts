@@ -2,12 +2,11 @@
 import { IsEmail } from '@nestjs/class-validator';
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateChatDto {
+export class JoinChatDto {
   @IsNotEmpty()
   @IsEmail()
-  studentId: string;
+  userId: string;
 
   @IsNotEmpty()
-  @IsEmail()
-  teacherId: string;
+  chatId: number;
 }

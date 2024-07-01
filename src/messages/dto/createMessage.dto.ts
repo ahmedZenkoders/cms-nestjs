@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 import { IsEmail, IsInt } from '@nestjs/class-validator';
-import { IsNotEmpty, IsString,IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateMessageDto {
-  @IsNotEmpty({message:"Cannot send empty message"})
+  @IsNotEmpty({ message: 'Cannot send empty message' })
   @IsString()
   content: string;
 
