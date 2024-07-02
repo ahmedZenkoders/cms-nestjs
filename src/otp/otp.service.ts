@@ -29,7 +29,8 @@ export class OtpService {
   async generateOtp(generateOtpDto: GenerateOtpDto) {
     const otp = crypto.randomInt(100000, 999999).toString();
     console.log(otp);
-    const expiresAt = new Date(Date.now() + 5 * 60000);
+    const FIVE_MINUTES = 5 * 60000;
+    const expiresAt = new Date(Date.now() + FIVE_MINUTES);
     await this.otprepository.save({
       email: generateOtpDto.email,
       otp,
@@ -53,7 +54,7 @@ export class OtpService {
       await this.otprepository.delete(otpEntry.id);
       throw new BadRequestException('OTP expired');
     }
-    let user;
+    let user: Student | Teacher | Admin;
     switch (entityType) {
       case 'student':
         await this.studentrepository.update(

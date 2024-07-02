@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -26,73 +27,81 @@ import { UpdateStudentDto } from './dto/updateStudent.dto';
 import { CourseService } from 'src/courses/courses.service';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { CreateAppointmentDto } from 'src/appointments/dto/createAppointment.dto';
+import { PaginationSearchDto } from './dto/pagination-search.dto';
 
 // @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('student')
 export class StudentsController {
   constructor(
-    private readonly enrolmentService: EnrolmentService,
-    private readonly studentService: StudentsService,
-    private readonly courseService: CourseService,
-    private readonly appointmentService: AppointmentsService,
+    private enrolmentService: EnrolmentService,
+    private studentService: StudentsService,
+    private courseService: CourseService,
+    private appointmentService: AppointmentsService,
   ) {}
+
   @Roles(Role.student)
   @Post('/addEnrolment')
   async Create(@Body() createEnrolmentDto: CreateEnrolmentDto) {
     return this.enrolmentService.CreateEnrolment(createEnrolmentDto);
   }
-  @Roles(Role.student)
+
+  // @Roles(Role.student)
   @Delete('/dropCourse')
   async Drop(@Body() removeCourseDto: RemoveCourseDto) {
     HttpCode(HttpStatus.OK);
     return this.enrolmentService.RemoveCourse(removeCourseDto);
   }
-  @Roles(Role.student)
-  @Get('/getEnrolmentsbyEmail')
-  async Get(@Body('email') email: string) {
+
+  // @Roles(Role.student)
+  @Get('/getEnrolmentsbyEmail/:email')
+  async Get(@Param('email') email: string) {
     HttpCode(HttpStatus.OK);
-    return this.enrolmentService.GetAllEnrolments(email);
+    return this.enrolmentService.getAllEnrolmentsWithStudent(email);
   }
-  @Roles(Role.student)
-  @Patch('/updateprofilepicture/:email')
+
+  // @Roles(Role.student)
+  @Post('/uploadProfilePicture/:email')
   @UseInterceptors(FileInterceptor('image'))
-  async updateStudentProfilePicture(
+  @HttpCode(HttpStatus.OK)
+  async UploadPicture(
     @Param('email') email: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    const updatedImageUrl =
-      await this.studentService.updateStudentProfilePicture(email, file);
-    return {
-      message: 'Student profile picture updated successfully',
-      imageUrl: updatedImageUrl,
-    };
+    return await this.studentService.uploadStudentProfilePicture(email, image);
   }
-  @Roles(Role.student)
+
+  // @Roles(Role.student)
   @Patch('/updateProfile/:email')
-  UpdateProfile(
+  @HttpCode(HttpStatus.OK)
+  async UpdateProfile(
     @Param('email') email: string,
     @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    return this.studentService.updateStudentProfile(email, updateStudentDto);
+    return await this.studentService.updateStudentProfile(
+      email,
+      updateStudentDto,
+    );
   }
-  @Roles(Role.student)
+
+  // @Roles(Role.student)
   @Get('/viewProfile/:email')
   async ViewProfile(@Param('email') email: string) {
     return await this.studentService.ViewProfileDetails(email);
   }
-  @Roles(Role.student)
+  // @Roles(Role.student)
   @Get('/viewCourses')
-  async ViewAllCourses() {
-    return await this.courseService.getAllCourses();
+  async ViewAllCourses(@Query() paginationSearchDto: PaginationSearchDto) {
+    return await this.courseService.getAllCourses(paginationSearchDto);
   }
 
+  // @Roles(Role.student)
   @Post('/createAppointment')
   async CreateAppointment(@Body() createAppointmentDto: CreateAppointmentDto) {
     return await this.appointmentService.createAppointment(
       createAppointmentDto,
     );
   }
-
+  // @Roles(Role.student)
   @Get('getMyAppointments/:email')
   async getAppointmentsByEmail(@Param('email') email: string) {
     const appointments =

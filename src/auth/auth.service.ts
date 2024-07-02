@@ -40,10 +40,7 @@ export class AuthService {
     private otpservice: OtpService,
   ) {}
 
-  async adminSignUp(
-    createadmindto: CreateAdminDto,
-    image: Express.Multer.File,
-  ) {
+  async adminSignUp(createadmindto: CreateAdminDto) {
     await this.domainservice.isDomainAllowed(createadmindto.email);
     const existingUser = await this.adminRepository.findOneBy({
       email: createadmindto.email,
@@ -52,22 +49,19 @@ export class AuthService {
       throw new HttpException('Email Already taken.', HttpStatus.BAD_REQUEST);
     }
     const hashedPassword = await bcrypt.hash(createadmindto.password, 10);
-    const imageurl = await this.uploadservice.uploadImage(image);
+
     await this.otpservice.generateOtp({ email: createadmindto.email });
     const user = this.adminRepository.create({
       ...createadmindto,
       password: hashedPassword,
-      img: imageurl,
+
       created_at: new Date(Date.now()),
       updated_at: new Date(Date.now()),
     });
     this.adminRepository.save(user);
     return { data: user };
   }
-  async teacherSignUp(
-    createteacherdto: CreateTeacherDto,
-    image: Express.Multer.File,
-  ) {
+  async teacherSignUp(createteacherdto: CreateTeacherDto) {
     await this.domainservice.isDomainAllowed(createteacherdto.email);
     const existingUser = await this.teacherRepository.findOneBy({
       email: createteacherdto.email,
@@ -76,12 +70,12 @@ export class AuthService {
       throw new HttpException('Email Already taken.', HttpStatus.BAD_REQUEST);
     }
     const hashedPassword = await bcrypt.hash(createteacherdto.password, 10);
-    const imageurl = await this.uploadservice.uploadImage(image);
+
     await this.otpservice.generateOtp({ email: createteacherdto.email });
     const user = this.teacherRepository.create({
       ...createteacherdto,
       password: hashedPassword,
-      img: imageurl,
+
       created_at: new Date(Date.now()),
       updated_at: new Date(Date.now()),
     });
@@ -90,10 +84,7 @@ export class AuthService {
     return { data: user };
   }
 
-  async studentSignUp(
-    createstudentdto: CreateStudentDto,
-    image: Express.Multer.File,
-  ) {
+  async studentSignUp(createstudentdto: CreateStudentDto) {
     await this.domainservice.isDomainAllowed(createstudentdto.email);
     const existingUser = await this.studentRepository.findOneBy({
       email: createstudentdto.email,
@@ -102,12 +93,12 @@ export class AuthService {
       throw new HttpException('Email Already taken.', HttpStatus.BAD_REQUEST);
     }
     const hashedPassword = await bcrypt.hash(createstudentdto.password, 10);
-    const imageurl = await this.uploadservice.uploadImage(image);
+
     await this.otpservice.generateOtp({ email: createstudentdto.email });
     const user = this.studentRepository.create({
       ...createstudentdto,
       password: hashedPassword,
-      img: imageurl,
+
       created_at: new Date(Date.now()),
       updated_at: new Date(Date.now()),
     });

@@ -52,6 +52,8 @@ import { ChatsController } from './chat/chat.controller';
 import { ChatService } from './chat/chat.service';
 import { MessageService } from './messages/messages.service';
 import { ChatGateway } from './chat/chat.gateway';
+import { TeachersService } from './teachers/teachers.service';
+import { AdminService } from './admin/admin.service';
 
 @Module({
   imports: [
@@ -136,6 +138,8 @@ import { ChatGateway } from './chat/chat.gateway';
     SlotService,
     ChatService,
     MessageService,
+    TeachersService,
+    AdminService,
     ChatGateway,
   ],
 })

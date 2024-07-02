@@ -20,9 +20,9 @@ import { MailService } from 'src/mail/mail.service';
   imports: [
     TypeOrmModule.forFeature([
       Teacher,
-      Course,
       Enrolment,
       Student,
+      Course,
       Slot,
       Appointment,
     ]),
@@ -30,9 +30,9 @@ import { MailService } from 'src/mail/mail.service';
   controllers: [TeachersController],
   providers: [
     TeachersService,
-    CourseService,
-    EnrolmentService,
     StudentsService,
+    EnrolmentService,
+    CourseService,
     SlotService,
     AppointmentsService,
     MailService,

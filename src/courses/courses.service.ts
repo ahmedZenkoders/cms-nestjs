@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Teacher } from 'src/teachers/entities/teacher';
+import { PaginationSearchDto } from 'src/students/dto/pagination-search.dto';
 
 @Injectable()
 export class CourseService {
@@ -56,15 +57,32 @@ export class CourseService {
       };
     }
   }
-  async getAllCourses() {
-    const courses = await this.courserepository.find();
-    if (courses.length >= 1) {
+  async getAllCourses(paginationSearchDto: PaginationSearchDto) {
+    try {
+      const { page, limit, search } = paginationSearchDto;
+      const query = this.courserepository.createQueryBuilder('courses');
+
+      if (search) {
+        query.where(
+          'courses.coursecode ILIKE :search OR courses.name ILIKE :search',
+          { search: `%${search}%`.toLowerCase() },
+        );
+      }
+
+      const [result, total] = await query
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+
       return {
-        courses,
+        data: result,
+        count: total,
       };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-    throw new NotFoundException('No course available');
   }
+
   async getCourseById(id: string) {
     const course = await this.courserepository.findOneBy({
       coursecode: id,

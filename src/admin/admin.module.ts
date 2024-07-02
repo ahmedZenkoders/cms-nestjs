@@ -16,6 +16,9 @@ import { Student } from 'src/students/entities/student';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { Appointment } from 'src/appointments/entities/appointment';
 import { MailService } from 'src/mail/mail.service';
+import { EnrolmentService } from 'src/enrolment/enrolment.service';
+import { Enrolment } from 'src/enrolment/entities/enrolment';
+import { Admin } from './entities/admin';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -25,6 +28,8 @@ import { MailService } from 'src/mail/mail.service';
       Slot,
       Student,
       Appointment,
+      Enrolment,
+      Admin,
     ]),
   ],
   providers: [
@@ -36,6 +41,7 @@ import { MailService } from 'src/mail/mail.service';
     StudentsService,
     AppointmentsService,
     MailService,
+    EnrolmentService,
   ],
   controllers: [AdminController],
 })

@@ -14,7 +14,7 @@ export class DomainService {
 
   async getAllowedDomains() {
     const domains = await this.domainRepository.find();
-    return domains.map((domain) => domain.name);
+    return domains;
   }
 
   async addAllowedDomain(createdomaindto: CreateDomainDto) {
@@ -45,7 +45,7 @@ export class DomainService {
     return { message: `${createdomaindto.name} domain is deleted` };
   }
 
-  async isDomainAllowed(email) {
+  async isDomainAllowed(email: string) {
     const domain = email.split('@')[1];
     const allowedDomain = await this.domainRepository.findOne({
       where: { name: domain },

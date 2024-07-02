@@ -44,7 +44,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const chat_id = joinChatDto.chatId.toString();
     console.log(typeof chat_id);
-    let user;
+    let user: Teacher | Student;
     try {
       user = await this.studentRepository.findOneBy({
         email: joinChatDto.userId,

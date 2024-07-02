@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { Appointment } from 'src/appointments/entities/appointment';
+import { SentMessageInfo } from 'nodemailer/lib/smtp-transport';
 
 @Injectable()
 export class MailService {
-  private transporter;
+  private transporter: nodemailer.Transporter<SentMessageInfo>;
   constructor() {
     this.transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -27,7 +27,7 @@ export class MailService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  async sendAppointmentEmail(email:string, status: string) {
+  async sendAppointmentEmail(email: string, status: string) {
     // console.log("Appointment:", appointment);
     // const studentEmail = appointment.student_id?.email;
     // const teacherName = appointment.teacher_id?.username;
@@ -35,7 +35,7 @@ export class MailService {
     // console.log(studentEmail);
     // console.log(teacherName);
     // console.log(appointmentDate);
-    console.log("Email from appointment service",email)
+    console.log('Email from appointment service', email);
 
     // if (!studentEmail || !teacherName) {
     //   throw new Error('Student email or teacher name is undefined.');
@@ -50,6 +50,5 @@ export class MailService {
     };
 
     await this.transporter.sendMail(mailOptions);
-}
-
+  }
 }

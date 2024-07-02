@@ -17,8 +17,8 @@ import { MailService } from 'src/mail/mail.service';
   imports: [
     TypeOrmModule.forFeature([
       Student,
-      Course,
       Enrolment,
+      Course,
       Teacher,
       Appointment,
     ]),
@@ -28,8 +28,8 @@ import { MailService } from 'src/mail/mail.service';
     StudentsService,
     EnrolmentService,
     CourseService,
-    TeachersService,
     AppointmentsService,
+    TeachersService,
     MailService,
   ],
 })

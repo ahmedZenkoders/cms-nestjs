@@ -12,6 +12,7 @@ import { Student } from 'src/students/entities/student';
 import { Course } from 'src/courses/entities/course';
 import { EnrolmentStatus } from 'src/enum/enrolment.enum';
 import { RemoveCourseDto } from './dto/removeCourse.dto';
+import { PaginationSearchDto } from 'src/students/dto/pagination-search.dto';
 
 @Injectable()
 export class EnrolmentService {
@@ -67,22 +68,49 @@ export class EnrolmentService {
       },
     };
   }
-  async GetAllEnrolments(email: string) {
-    const studentwithId = await this.StudentRepository.findOneBy({
-      email: email,
-    });
-    const enrolments = await this.EnrolmentRepository.find({
-      where: { student_id: studentwithId },
-    });
-    if (!enrolments) {
+  async getAllEnrolments(paginationSearchDto: PaginationSearchDto) {
+    try {
+      const { page, limit, search } = paginationSearchDto;
+      const query = this.EnrolmentRepository.createQueryBuilder('enrolment');
+
+      if (search) {
+        query.where(
+          'enrolment.coursecode LIKE :search OR enrolment.student_id LIKE :search',
+          { search: `%${search}%` },
+        );
+      }
+
+      const [result, total] = await query
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+
       return {
-        message: 'No enrolments available',
+        data: result,
+        count: total,
       };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-    return {
-      enrolments,
-    };
   }
+
+  async getAllEnrolmentsWithStudent(studentEmail: string) {
+    const student = await this.StudentRepository.findOneBy({
+      email: studentEmail,
+    });
+    if (!student) {
+      throw new NotFoundException('Student Not found');
+    }
+
+    const studentEnrolment = await this.EnrolmentRepository.findOne({
+      where: { student_id: student },
+    });
+    if (!studentEnrolment) {
+      throw new NotFoundException('No enrolment Found for this student');
+    }
+    return studentEnrolment;
+  }
+
   async GetAllEnrolmentsWithTeacher(teacherEmail: string) {
     try {
       const studentsEnrolled =

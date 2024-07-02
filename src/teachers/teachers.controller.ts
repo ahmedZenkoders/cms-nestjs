@@ -9,7 +9,10 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { ApproveRejectDto } from 'src/appointments/dto/acceptReject.dto';
 
@@ -22,14 +25,17 @@ import { Role } from 'src/enum/role.enum';
 import { CreateSlotDto } from 'src/slots/dto/createSlot.dto';
 import { UpdateSlotDto } from 'src/slots/dto/updateSlot.dto';
 import { SlotService } from 'src/slots/slots.service';
+import { TeachersService } from './teachers.service';
+import { UpdateTeacherDto } from './dto/updateTeacher.dto';
 
 @Controller('teacher')
 export class TeachersController {
   constructor(
-    private readonly enrolmentsService: EnrolmentService,
-    private readonly courseService: CourseService,
-    private readonly slotService: SlotService,
+    private enrolmentsService: EnrolmentService,
+    private courseService: CourseService,
+    private slotService: SlotService,
     private appointmentService: AppointmentsService,
+    private teacherService: TeachersService,
   ) {}
 
   @HttpCode(HttpStatus.OK)
@@ -97,7 +103,31 @@ export class TeachersController {
     @Param('id') id: number,
     @Body() approveRejectDto: ApproveRejectDto,
   ) {
+    return await this.appointmentService.ApproveRejectAppointment(
+      id,
+      approveRejectDto,
+    );
+  }
 
-    return await this.appointmentService.ApproveRejectAppointment(id,approveRejectDto);
+  @Post('/uploadProfilePicture/:email')
+  @UseInterceptors(FileInterceptor('image'))
+  @HttpCode(HttpStatus.OK)
+  async UploadPicture(
+    @Param('email') email: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return await this.teacherService.uploadTeacherProfilePicture(email, image);
+  }
+
+  @Post('/updateProfile/:email')
+  @HttpCode(HttpStatus.OK)
+  async UpdateProfile(
+    @Param('email') email: string,
+    @Body() updateTeacherDto: UpdateTeacherDto,
+  ) {
+    return await this.teacherService.updateTeacherProfile(
+      email,
+      updateTeacherDto,
+    );
   }
 }

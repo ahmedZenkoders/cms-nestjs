@@ -7,10 +7,7 @@ import {
   HttpStatus,
   Injectable,
   Post,
-  Request,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateStudentDto } from 'src/students/dto/createStudent.dto';
@@ -20,7 +17,7 @@ import { LoginTeacherDto } from 'src/teachers/dto/loginTeacher.dto';
 import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+
 import { VerifyOtpDto } from 'src/otp/dto/verifyOtp.dto';
 
 @Injectable()
@@ -29,12 +26,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('studentsignup')
-  @UseInterceptors(FileInterceptor('image'))
-  async createStudent(
-    @Body() createstudentdto: CreateStudentDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    const user = this.authService.studentSignUp(createstudentdto, image);
+  async createStudent(@Body() createstudentdto: CreateStudentDto) {
+    const user = this.authService.studentSignUp(createstudentdto);
     HttpCode(HttpStatus.CREATED);
     return user;
   }
@@ -47,12 +40,8 @@ export class AuthController {
   }
 
   @Post('teachersignup')
-  @UseInterceptors(FileInterceptor('image'))
-  async createTeacher(
-    @Body() createteacherdto: CreateTeacherDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    const user = this.authService.teacherSignUp(createteacherdto, image);
+  async createTeacher(@Body() createteacherdto: CreateTeacherDto) {
+    const user = this.authService.teacherSignUp(createteacherdto);
     HttpCode(HttpStatus.CREATED);
     return user;
   }
@@ -66,12 +55,8 @@ export class AuthController {
   }
 
   @Post('adminsignup')
-  @UseInterceptors(FileInterceptor('image'))
-  async createAdmin(
-    @Body() createadmindto: CreateAdminDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    const user = this.authService.adminSignUp(createadmindto, image);
+  async createAdmin(@Body() createadmindto: CreateAdminDto) {
+    const user = this.authService.adminSignUp(createadmindto);
     HttpCode(HttpStatus.CREATED);
     return user;
   }
@@ -110,11 +95,5 @@ export class AuthController {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('protected')
-  getProtectedRoute(@Request() req) {
-    return { message: 'This is a protected route', user: req.user };
   }
 }
