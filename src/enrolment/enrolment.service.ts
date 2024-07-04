@@ -13,6 +13,7 @@ import { Course } from 'src/courses/entities/course';
 import { EnrolmentStatus } from 'src/enum/enrolment.enum';
 import { RemoveCourseDto } from './dto/removeCourse.dto';
 import { PaginationSearchDto } from 'src/students/dto/pagination-search.dto';
+import { PaymentStatus } from 'src/enum/payment.enum';
 
 @Injectable()
 export class EnrolmentService {
@@ -51,22 +52,28 @@ export class EnrolmentService {
       throw new BadRequestException('Deadline has been passed');
     }
 
-    const enrolment = this.EnrolmentRepository.create({
-      student_id: studentwithId,
-      course_code: coursewithCode,
-      created_at: new Date(),
-      status: EnrolmentStatus.active,
-    });
-
-    await this.EnrolmentRepository.save(enrolment);
-    return {
-      message: 'Student enrolled successfully',
-      enrolment: {
-        enrolmentId: enrolment.id,
-        student: studentwithId,
-        course: coursewithCode,
-      },
-    };
+    if (studentwithId.payment_id.status === PaymentStatus.Successful) {
+      const enrolment = this.EnrolmentRepository.create({
+        student_id: studentwithId,
+        course_code: coursewithCode,
+        created_at: new Date(),
+        status: EnrolmentStatus.active,
+      });
+      await this.EnrolmentRepository.save(enrolment);
+      return {
+        message: 'Student enrolled successfully',
+        enrolment: {
+          enrolmentId: enrolment.id,
+          student: studentwithId,
+          course: coursewithCode,
+        },
+      };
+    } else if (
+      studentwithId.payment_id.status === PaymentStatus.Pending ||
+      studentwithId.payment_id.status === PaymentStatus.Rejected
+    ) {
+      throw new BadRequestException('First Complete the Transaction');
+    }
   }
   async getAllEnrolments(paginationSearchDto: PaginationSearchDto) {
     try {

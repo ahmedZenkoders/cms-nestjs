@@ -13,6 +13,9 @@ import { Teacher } from 'src/teachers/entities/teacher';
 import { Appointment } from 'src/appointments/entities/appointment';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { MailService } from 'src/mail/mail.service';
+import { Payment } from 'src/payment/entities/payment';
+import { PaymentService } from 'src/payment/payment.service';
+import { StripeService } from 'src/stripe/stripe.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -21,6 +24,7 @@ import { MailService } from 'src/mail/mail.service';
       Course,
       Teacher,
       Appointment,
+      Payment,
     ]),
   ],
   controllers: [StudentsController],
@@ -31,6 +35,8 @@ import { MailService } from 'src/mail/mail.service';
     AppointmentsService,
     TeachersService,
     MailService,
+    PaymentService,
+    StripeService,
   ],
 })
 export class StudentsModule {}

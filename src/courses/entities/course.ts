@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Enrolment } from 'src/enrolment/entities/enrolment';
+import { Payment } from 'src/payment/entities/payment';
 import { Teacher } from 'src/teachers/entities/teacher';
 import {
   Entity,
@@ -27,6 +28,9 @@ export class Course {
   @Column()
   deadline: Date;
 
+  @Column({ nullable: true })
+  price: number;
+
   @Column({ type: 'timestamp' })
   created_at: Date;
 
@@ -39,4 +43,7 @@ export class Course {
   @ManyToOne(() => Teacher, (teacher) => teacher.courses)
   @JoinColumn({ name: 'teacher_id' })
   teacher_id: Teacher;
+
+  @OneToMany(() => Payment, (payment) => payment.course_code)
+  payment_id: Payment;
 }

@@ -54,9 +54,17 @@ import { MessageService } from './messages/messages.service';
 import { ChatGateway } from './chat/chat.gateway';
 import { TeachersService } from './teachers/teachers.service';
 import { AdminService } from './admin/admin.service';
+import { StripeController } from './stripe/stripe.controller';
+import { StripeService } from './stripe/stripe.service';
+import { StripeModule } from './stripe/stripe.module';
+import { PaymentModule } from './payment/payment.module';
+import { PaymentService } from './payment/payment.service';
+import { Payment } from './payment/entities/payment';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -76,6 +84,7 @@ import { AdminService } from './admin/admin.service';
         Slot,
         Chat,
         Message,
+        Payment,
       ],
       synchronize: true,
     }),
@@ -85,6 +94,7 @@ import { AdminService } from './admin/admin.service';
       secret: jwtConstant.secret,
       signOptions: { expiresIn: '1h' },
     }),
+
     TypeOrmModule.forFeature([
       Student,
       Teacher,
@@ -97,6 +107,7 @@ import { AdminService } from './admin/admin.service';
       Slot,
       Message,
       Chat,
+      Payment,
     ]),
     AuthModule,
     StudentsModule,
@@ -111,6 +122,8 @@ import { AdminService } from './admin/admin.service';
     AppointmentsModule,
     ChatModule,
     MessagesModule,
+    StripeModule,
+    PaymentModule,
   ],
   controllers: [
     AdminController,
@@ -123,6 +136,7 @@ import { AdminService } from './admin/admin.service';
     AppointmentsController,
     MessagesController,
     ChatsController,
+    StripeController,
   ],
   providers: [
     DomainService,
@@ -141,6 +155,8 @@ import { AdminService } from './admin/admin.service';
     TeachersService,
     AdminService,
     ChatGateway,
+    StripeService,
+    PaymentService,
   ],
 })
 export class AppModule {}

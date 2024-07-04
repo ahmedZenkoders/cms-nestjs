@@ -13,12 +13,20 @@ import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Teacher } from 'src/teachers/entities/teacher';
 import { PaginationSearchDto } from 'src/students/dto/pagination-search.dto';
+import { Student } from 'src/students/entities/student';
+import { CreatePaymentDto } from 'src/payment/dto/createPayment.dto';
+import { Payment } from 'src/payment/entities/payment';
+import { PaymentStatus } from 'src/enum/payment.enum';
+import { StripeService } from 'src/stripe/stripe.service';
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectRepository(Course) private courserepository: Repository<Course>,
     @InjectRepository(Teacher) private teacherrepository: Repository<Teacher>,
+    @InjectRepository(Student) private studentrepository: Repository<Student>,
+    @InjectRepository(Payment) private paymentrepository: Repository<Payment>,
+    private stripeService: StripeService,
   ) {}
   async addCourse(createCourseDto: CreateCourseDto) {
     try {
@@ -143,6 +151,59 @@ export class CourseService {
       throw new BadRequestException('Course doesnot exist');
     } catch (error) {
       throw new InternalServerErrorException(error.messsage);
+    }
+  }
+
+  async purchaseCourse(createPaymentDto: CreatePaymentDto) {
+    try {
+      const course = await this.courserepository.findOne({
+        where: { coursecode: createPaymentDto.course_code },
+      });
+
+      if (!course) {
+        throw new NotFoundException('Course not found');
+      }
+
+      const student = await this.studentrepository.findOne({
+        where: { email: createPaymentDto.student_id },
+      });
+
+      if (!student) {
+        throw new NotFoundException('Student not found');
+      }
+
+      const alreadyPaidCourse = await this.paymentrepository.findOne({
+        where: {
+          course_code: course,
+          student_id: student,
+          status: PaymentStatus.Successful,
+        },
+      });
+      if (alreadyPaidCourse) {
+        throw new BadRequestException('Already Paid');
+      }
+
+      const newPayment = this.paymentrepository.create({
+        student_id: student,
+        course_code: course,
+        amount: course.price,
+        time: new Date(),
+        status: PaymentStatus.Pending,
+      });
+
+      await this.paymentrepository.save(newPayment);
+
+      console.log(course.coursecode, typeof course.coursecode);
+
+      const session = await this.stripeService.createCheckoutSession(
+        course.coursecode,
+        student.email,
+        course.price,
+      );
+
+      return { sessionId: session.id, paymentId: newPayment.id };
+    } catch (error) {
+      throw new Error(`Failed to initiate purchase: ${error.message}`);
     }
   }
 }

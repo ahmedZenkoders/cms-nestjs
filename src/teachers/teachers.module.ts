@@ -15,6 +15,9 @@ import { SlotService } from 'src/slots/slots.service';
 import { Appointment } from 'src/appointments/entities/appointment';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { MailService } from 'src/mail/mail.service';
+import { PaymentService } from 'src/payment/payment.service';
+import { Payment } from 'src/payment/entities/payment';
+import { StripeService } from 'src/stripe/stripe.service';
 
 @Module({
   imports: [
@@ -24,6 +27,7 @@ import { MailService } from 'src/mail/mail.service';
       Student,
       Course,
       Slot,
+      Payment,
       Appointment,
     ]),
   ],
@@ -36,6 +40,8 @@ import { MailService } from 'src/mail/mail.service';
     SlotService,
     AppointmentsService,
     MailService,
+    PaymentService,
+    StripeService,
   ],
 })
 export class TeachersModule {}

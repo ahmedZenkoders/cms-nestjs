@@ -31,6 +31,7 @@ export class JwtAuthGuard implements CanActivate {
       });
       console.log(payload);
       request.user = payload;
+      request['fetchedEmail'] = payload.email;
       console.log(request.user);
 
       return true;

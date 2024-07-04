@@ -28,6 +28,7 @@ import { CourseService } from 'src/courses/courses.service';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { CreateAppointmentDto } from 'src/appointments/dto/createAppointment.dto';
 import { PaginationSearchDto } from './dto/pagination-search.dto';
+import { CreatePaymentDto } from 'src/payment/dto/createPayment.dto';
 
 // @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('student')
@@ -107,5 +108,10 @@ export class StudentsController {
     const appointments =
       await this.appointmentService.getAppointmentsByStudent(email);
     return appointments;
+  }
+
+  @Post('/purchaseCourse')
+  async Purchase(createPaymentDto: CreatePaymentDto) {
+    return this.courseService.purchaseCourse(createPaymentDto);
   }
 }

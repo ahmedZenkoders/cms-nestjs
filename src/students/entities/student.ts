@@ -4,6 +4,7 @@ import { Appointment } from 'src/appointments/entities/appointment';
 import { Chat } from 'src/chat/entities/chat';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { Message } from 'src/messages/entities/message';
+import { Payment } from 'src/payment/entities/payment';
 import { Teacher } from 'src/teachers/entities/teacher';
 import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from 'typeorm';
 
@@ -60,6 +61,9 @@ export class Student {
   @OneToMany(() => Message, (messages) => messages.receiverStudent)
   receiveMessages: Message;
 
-  @OneToMany(()=> Chat,(chat)=> chat.student_id)
-  chat_id:Chat
+  @OneToMany(() => Chat, (chat) => chat.student_id)
+  chat_id: Chat;
+
+  @OneToMany(() => Payment, (payment) => payment.student_id)
+  payment_id: Payment;
 }

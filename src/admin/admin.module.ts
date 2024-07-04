@@ -19,6 +19,9 @@ import { MailService } from 'src/mail/mail.service';
 import { EnrolmentService } from 'src/enrolment/enrolment.service';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { Admin } from './entities/admin';
+import { PaymentService } from 'src/payment/payment.service';
+import { Payment } from 'src/payment/entities/payment';
+import { StripeService } from 'src/stripe/stripe.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -30,6 +33,7 @@ import { Admin } from './entities/admin';
       Appointment,
       Enrolment,
       Admin,
+      Payment,
     ]),
   ],
   providers: [
@@ -42,6 +46,8 @@ import { Admin } from './entities/admin';
     AppointmentsService,
     MailService,
     EnrolmentService,
+    PaymentService,
+    StripeService,
   ],
   controllers: [AdminController],
 })
