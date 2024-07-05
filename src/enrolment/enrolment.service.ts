@@ -70,7 +70,7 @@ export class EnrolmentService {
       };
     } else if (
       studentwithId.payment_id.status === PaymentStatus.Pending ||
-      studentwithId.payment_id.status === PaymentStatus.Rejected
+      studentwithId.payment_id.status === PaymentStatus.Failed
     ) {
       throw new BadRequestException('First Complete the Transaction');
     }
