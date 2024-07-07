@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { IsOptional } from '@nestjs/class-validator';
 import { IsDateString, IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { CourseType } from 'src/enum/course-type.enum';
 
 export class CreateCourseDto {
   @IsString()
@@ -19,6 +20,9 @@ export class CreateCourseDto {
   @IsNotEmpty({ message: 'Course deadline is required' })
   @IsDateString()
   deadline: Date;
+
+  
+  type:CourseType
 
   @IsNotEmpty({ message: 'Teacher id is required' })
   @IsEmail()

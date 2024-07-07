@@ -14,6 +14,8 @@ import { EnrolmentStatus } from 'src/enum/enrolment.enum';
 import { RemoveCourseDto } from './dto/removeCourse.dto';
 import { PaginationSearchDto } from 'src/students/dto/pagination-search.dto';
 import { PaymentStatus } from 'src/enum/payment.enum';
+import { CourseType } from 'src/enum/course-type.enum';
+import { CourseService } from 'src/courses/courses.service';
 
 @Injectable()
 export class EnrolmentService {
@@ -24,6 +26,7 @@ export class EnrolmentService {
     private StudentRepository: Repository<Student>,
     @InjectRepository(Course)
     private CourseRepository: Repository<Course>,
+    private readonly courseService:CourseService
   ) {}
 
   async CreateEnrolment(createEnrolmentDto: CreateEnrolmentDto) {
@@ -37,6 +40,7 @@ export class EnrolmentService {
       course_code: coursewithCode,
       student_id: studentwithId,
     });
+    if (coursewithCode.type===CourseType.free){
     if (alreadyEnrolledStudent) {
       throw new BadRequestException(
         'Student is already enrolled in this course',
@@ -51,29 +55,28 @@ export class EnrolmentService {
     if (new Date(coursewithCode.deadline) < new Date()) {
       throw new BadRequestException('Deadline has been passed');
     }
+    const enrolment=this.EnrolmentRepository.create({
+      ...createEnrolmentDto,
+      course_code:coursewithCode,
+      student_id:studentwithId,
+      status:EnrolmentStatus.active
+    })
+    return this.EnrolmentRepository.save(enrolment)
+  }
+  const url=await this.courseService.purchaseCourse(
+    createEnrolmentDto.student_id,
+    createEnrolmentDto.coursecode
+  )
+  return {
+    "message":"Session created successfully",
+    url
+  }
 
-    if (studentwithId.payment_id.status === PaymentStatus.Successful) {
-      const enrolment = this.EnrolmentRepository.create({
-        student_id: studentwithId,
-        course_code: coursewithCode,
-        created_at: new Date(),
-        status: EnrolmentStatus.active,
-      });
-      await this.EnrolmentRepository.save(enrolment);
-      return {
-        message: 'Student enrolled successfully',
-        enrolment: {
-          enrolmentId: enrolment.id,
-          student: studentwithId,
-          course: coursewithCode,
-        },
-      };
-    } else if (
-      studentwithId.payment_id.status === PaymentStatus.Pending ||
-      studentwithId.payment_id.status === PaymentStatus.Failed
-    ) {
-      throw new BadRequestException('First Complete the Transaction');
-    }
+  
+
+
+
+
   }
   async getAllEnrolments(paginationSearchDto: PaginationSearchDto) {
     try {

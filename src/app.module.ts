@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { StudentsModule } from './students/students.module';
@@ -61,6 +61,8 @@ import { PaymentModule } from './payment/payment.module';
 import { PaymentService } from './payment/payment.service';
 import { Payment } from './payment/entities/payment';
 import { ConfigModule } from '@nestjs/config';
+import { JsonBodyMiddleware } from './middleware/jsonBody';
+import { RawBodyMiddleware } from './middleware/rawBody';
 
 @Module({
   imports: [
@@ -68,7 +70,7 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5432,
+      port: 5434,
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
@@ -159,4 +161,15 @@ import { ConfigModule } from '@nestjs/config';
     PaymentService,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): void {
+      consumer
+          .apply(RawBodyMiddleware)
+          .forRoutes({
+              path: '/stripe/webhook',
+              method: RequestMethod.POST,
+          })
+          .apply(JsonBodyMiddleware)
+          .forRoutes('*');
+  }
+}

@@ -3,9 +3,9 @@ import {
   Controller,
   Post,
   RawBodyRequest,
-  Request,
   Headers,
   Body,
+  Req,
 } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 
@@ -14,12 +14,19 @@ export class StripeController {
   constructor(private stripeService: StripeService) {}
 
   @Post('/webhook')
-  async handleWebhook(
-    @Request() { rawBody }: RawBodyRequest<Request>,
+  async webhook(
     @Headers('stripe-signature') signature: string,
-  ) {
-    await this.stripeService.webhook(rawBody, signature);
+    @Req() req: RawBodyRequest<Request>,
+  ):Promise<{recieved:boolean}>{
+    // console.log("Raw Body",req)
+    return await this.stripeService.webhook(req.rawBody,signature);
   }
+
+  // @Post('/webhook-endpoint')
+  // async createEndpoint(
+  // ) {
+  //   return await this.stripeService.webhookEndpoint();
+  // }
 
   @Post('create-checkout-session')
   async createCheckoutSession(

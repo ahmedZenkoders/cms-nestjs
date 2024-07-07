@@ -28,7 +28,6 @@ import { CourseService } from 'src/courses/courses.service';
 import { AppointmentsService } from 'src/appointments/appointments.service';
 import { CreateAppointmentDto } from 'src/appointments/dto/createAppointment.dto';
 import { PaginationSearchDto } from './dto/pagination-search.dto';
-import { CreatePaymentDto } from 'src/payment/dto/createPayment.dto';
 
 // @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('student')
@@ -40,7 +39,7 @@ export class StudentsController {
     private appointmentService: AppointmentsService,
   ) {}
 
-  @Roles(Role.student)
+  // @Roles(Role.student)
   @Post('/addEnrolment')
   async Create(@Body() createEnrolmentDto: CreateEnrolmentDto) {
     return this.enrolmentService.CreateEnrolment(createEnrolmentDto);
@@ -110,8 +109,8 @@ export class StudentsController {
     return appointments;
   }
 
-  @Post('/purchaseCourse')
-  async Purchase(createPaymentDto: CreatePaymentDto) {
-    return this.courseService.purchaseCourse(createPaymentDto);
+  @Post('/purchaseCourse/:email')
+  async Purchase(@Body('courseCode') courseCode:string,@Param('email') email:string) {
+    return this.courseService.purchaseCourse(email,courseCode);
   }
 }

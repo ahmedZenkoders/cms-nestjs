@@ -44,7 +44,7 @@ export class TeachersController {
   async getEnrolmentsbyEmail(@Body('email') email: string) {
     return await this.enrolmentsService.GetAllEnrolmentsWithTeacher(email);
   }
-  @Roles(Role.teacher)
+  // @Roles(Role.teacher)
   @Post('/addCourse')
   async Create(@Body() createCourseDto: CreateCourseDto) {
     return await this.courseService.addCourse(createCourseDto);

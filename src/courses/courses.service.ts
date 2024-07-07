@@ -14,7 +14,6 @@ import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Teacher } from 'src/teachers/entities/teacher';
 import { PaginationSearchDto } from 'src/students/dto/pagination-search.dto';
 import { Student } from 'src/students/entities/student';
-import { CreatePaymentDto } from 'src/payment/dto/createPayment.dto';
 import { Payment } from 'src/payment/entities/payment';
 import { PaymentStatus } from 'src/enum/payment.enum';
 import { StripeService } from 'src/stripe/stripe.service';
@@ -26,7 +25,7 @@ export class CourseService {
     @InjectRepository(Teacher) private teacherrepository: Repository<Teacher>,
     @InjectRepository(Student) private studentrepository: Repository<Student>,
     @InjectRepository(Payment) private paymentrepository: Repository<Payment>,
-    private stripeService: StripeService,
+    private readonly stripeService: StripeService,
   ) {}
   async addCourse(createCourseDto: CreateCourseDto) {
     try {
@@ -154,10 +153,10 @@ export class CourseService {
     }
   }
 
-  async purchaseCourse(createPaymentDto: CreatePaymentDto) {
+  async purchaseCourse(student_id:string,coursecode:string) {
     try {
       const course = await this.courserepository.findOne({
-        where: { coursecode: createPaymentDto.course_code },
+        where: { coursecode: coursecode },
       });
 
       if (!course) {
@@ -165,7 +164,7 @@ export class CourseService {
       }
 
       const student = await this.studentrepository.findOne({
-        where: { email: createPaymentDto.student_id },
+        where: { email: student_id },
       });
 
       if (!student) {
@@ -182,8 +181,14 @@ export class CourseService {
       if (alreadyPaidCourse) {
         throw new BadRequestException('Already Paid');
       }
-
+      const session = await this.stripeService.createCheckoutSession(
+        course.coursecode,
+        student.email,
+        course.price,
+      );
+      console.log("Inside Course Service",session.id)
       const newPayment = this.paymentrepository.create({
+    sessionId:session.id,
         student_id: student,
         course_code: course,
         amount: course.price,
@@ -195,13 +200,9 @@ export class CourseService {
 
       console.log(course.coursecode, typeof course.coursecode);
 
-      const session = await this.stripeService.createCheckoutSession(
-        course.coursecode,
-        student.email,
-        course.price,
-      );
+  
 
-      return { sessionId: session.id, paymentId: newPayment.id };
+      return session.url;
     } catch (error) {
       throw new Error(`Failed to initiate purchase: ${error.message}`);
     }

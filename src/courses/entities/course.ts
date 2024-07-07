@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Enrolment } from 'src/enrolment/entities/enrolment';
+import { CourseType } from 'src/enum/course-type.enum';
 import { Payment } from 'src/payment/entities/payment';
 import { Teacher } from 'src/teachers/entities/teacher';
 import {
@@ -22,8 +23,8 @@ export class Course {
   @Column()
   description: string;
 
-  @Column()
-  type: string;
+  @Column({type:'enum',enum:CourseType,default:CourseType.free})
+  type: CourseType;
 
   @Column()
   deadline: Date;
