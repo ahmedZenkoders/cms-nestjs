@@ -1,5 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { StudentsModule } from './students/students.module';
@@ -70,7 +75,7 @@ import { RawBodyMiddleware } from './middleware/rawBody';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5434,
+      port: 5432,
       username: 'postgres',
       password: 'ahmedsiddiqui',
       database: 'CMS',
@@ -163,13 +168,13 @@ import { RawBodyMiddleware } from './middleware/rawBody';
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): void {
-      consumer
-          .apply(RawBodyMiddleware)
-          .forRoutes({
-              path: '/stripe/webhook',
-              method: RequestMethod.POST,
-          })
-          .apply(JsonBodyMiddleware)
-          .forRoutes('*');
+    consumer
+      .apply(RawBodyMiddleware)
+      .forRoutes({
+        path: '/stripe/webhook',
+        method: RequestMethod.POST,
+      })
+      .apply(JsonBodyMiddleware)
+      .forRoutes('*');
   }
 }

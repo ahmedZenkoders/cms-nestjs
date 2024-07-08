@@ -153,7 +153,7 @@ export class CourseService {
     }
   }
 
-  async purchaseCourse(student_id:string,coursecode:string) {
+  async purchaseCourse(student_id: string, coursecode: string) {
     try {
       const course = await this.courserepository.findOne({
         where: { coursecode: coursecode },
@@ -186,21 +186,19 @@ export class CourseService {
         student.email,
         course.price,
       );
-      console.log("Inside Course Service",session.id)
-      const newPayment = this.paymentrepository.create({
-    sessionId:session.id,
-        student_id: student,
-        course_code: course,
-        amount: course.price,
-        time: new Date(),
-        status: PaymentStatus.Pending,
-      });
+      console.log('Inside Course Service', session.id);
+      //   const newPayment = this.paymentrepository.create({
+      // sessionId:session.id,
+      //     student_id: student,
+      //     course_code: course,
+      //     amount: course.price,
+      //     time: new Date(),
+      //     status: PaymentStatus.Pending,
+      //   });
 
-      await this.paymentrepository.save(newPayment);
+      //   await this.paymentrepository.save(newPayment);
 
-      console.log(course.coursecode, typeof course.coursecode);
-
-  
+      //   console.log(course.coursecode, typeof course.coursecode);
 
       return session.url;
     } catch (error) {

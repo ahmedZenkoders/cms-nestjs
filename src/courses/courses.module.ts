@@ -11,9 +11,12 @@ import { StudentsService } from 'src/students/students.service';
 import { Payment } from 'src/payment/entities/payment';
 import { PaymentService } from 'src/payment/payment.service';
 import { StripeService } from 'src/stripe/stripe.service';
+import { Enrolment } from 'src/enrolment/entities/enrolment';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Course, Teacher, Student, Payment])],
+  imports: [
+    TypeOrmModule.forFeature([Course, Teacher, Student, Payment, Enrolment]),
+  ],
   providers: [
     CourseService,
     TeachersService,

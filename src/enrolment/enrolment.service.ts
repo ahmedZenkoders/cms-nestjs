@@ -13,7 +13,6 @@ import { Course } from 'src/courses/entities/course';
 import { EnrolmentStatus } from 'src/enum/enrolment.enum';
 import { RemoveCourseDto } from './dto/removeCourse.dto';
 import { PaginationSearchDto } from 'src/students/dto/pagination-search.dto';
-import { PaymentStatus } from 'src/enum/payment.enum';
 import { CourseType } from 'src/enum/course-type.enum';
 import { CourseService } from 'src/courses/courses.service';
 
@@ -26,7 +25,7 @@ export class EnrolmentService {
     private StudentRepository: Repository<Student>,
     @InjectRepository(Course)
     private CourseRepository: Repository<Course>,
-    private readonly courseService:CourseService
+    private readonly courseService: CourseService,
   ) {}
 
   async CreateEnrolment(createEnrolmentDto: CreateEnrolmentDto) {
@@ -40,7 +39,6 @@ export class EnrolmentService {
       course_code: coursewithCode,
       student_id: studentwithId,
     });
-    if (coursewithCode.type===CourseType.free){
     if (alreadyEnrolledStudent) {
       throw new BadRequestException(
         'Student is already enrolled in this course',
@@ -55,28 +53,25 @@ export class EnrolmentService {
     if (new Date(coursewithCode.deadline) < new Date()) {
       throw new BadRequestException('Deadline has been passed');
     }
-    const enrolment=this.EnrolmentRepository.create({
-      ...createEnrolmentDto,
-      course_code:coursewithCode,
-      student_id:studentwithId,
-      status:EnrolmentStatus.active
-    })
-    return this.EnrolmentRepository.save(enrolment)
-  }
-  const url=await this.courseService.purchaseCourse(
-    createEnrolmentDto.student_id,
-    createEnrolmentDto.coursecode
-  )
-  return {
-    "message":"Session created successfully",
-    url
-  }
-
-  
-
-
-
-
+    if (coursewithCode.type === CourseType.free) {
+      const enrolment = this.EnrolmentRepository.create({
+        ...createEnrolmentDto,
+        course_code: coursewithCode,
+        student_id: studentwithId,
+        status: EnrolmentStatus.active,
+        created_at: new Date(),
+      });
+      return this.EnrolmentRepository.save(enrolment);
+    } else if (coursewithCode.type === CourseType.paid) {
+      const url = await this.courseService.purchaseCourse(
+        createEnrolmentDto.student_id,
+        createEnrolmentDto.coursecode,
+      );
+      return {
+        message: 'Session created successfully',
+        url,
+      };
+    }
   }
   async getAllEnrolments(paginationSearchDto: PaginationSearchDto) {
     try {
