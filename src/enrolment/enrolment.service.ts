@@ -39,11 +39,7 @@ export class EnrolmentService {
       course_code: coursewithCode,
       student_id: studentwithId,
     });
-    if (alreadyEnrolledStudent) {
-      throw new BadRequestException(
-        'Student is already enrolled in this course',
-      );
-    }
+
     if (!studentwithId) {
       throw new BadRequestException('Student with this id doesnot exist');
     }
@@ -52,6 +48,11 @@ export class EnrolmentService {
     }
     if (new Date(coursewithCode.deadline) < new Date()) {
       throw new BadRequestException('Deadline has been passed');
+    }
+    if (alreadyEnrolledStudent) {
+      throw new BadRequestException(
+        'Student is already enrolled in this course',
+      );
     }
     if (coursewithCode.type === CourseType.free) {
       const enrolment = this.EnrolmentRepository.create({

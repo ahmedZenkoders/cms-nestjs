@@ -51,4 +51,14 @@ export class MailService {
 
     await this.transporter.sendMail(mailOptions);
   }
+  async sendEnrollmentConfirmation(email: string, courseName: string) {
+    const mailOptions = {
+      from: 'ahmed.zenkoders@gmail.com',
+      to: email,
+      subject: 'Enrollment Confirmation',
+      text: `You are enrolled in the course ${courseName}.`,
+      html: `<p>You are enrolled in the course <b>${courseName}</b>.</p>`,
+    };
+    await this.transporter.sendMail(mailOptions);
+  }
 }

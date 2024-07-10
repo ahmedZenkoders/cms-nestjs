@@ -7,10 +7,11 @@ import { Payment } from 'src/payment/entities/payment';
 import { Student } from 'src/students/entities/student';
 import { StripeController } from './stripe.controller';
 import { StripeService } from './stripe.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
-    imports:[TypeOrmModule.forFeature([Payment,Student,Course,Enrolment])],
-    controllers:[StripeController],
-    providers:[StripeService]
+  imports: [TypeOrmModule.forFeature([Payment, Student, Course, Enrolment])],
+  controllers: [StripeController],
+  providers: [StripeService, MailService],
 })
 export class StripeModule {}

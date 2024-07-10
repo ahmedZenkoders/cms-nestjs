@@ -15,7 +15,7 @@ import { Payment } from 'src/payment/entities/payment';
 import { PaymentStatus } from 'src/enum/payment.enum';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
 import { EnrolmentStatus } from 'src/enum/enrolment.enum';
-
+import { MailService } from 'src/mail/mail.service';
 @Injectable()
 export class StripeService {
   private stripe: Stripe;
@@ -25,6 +25,7 @@ export class StripeService {
     @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
     @InjectRepository(Enrolment)
     private enrolmentRepository: Repository<Enrolment>,
+    private readonly mailService: MailService,
   ) {
     this.stripe = new Stripe(
       'sk_test_51PYqQ5FpHpOCAS9xeV35PK6tZtFwCi6miuhS5HNOaRcH0XF6K2S5f5jp3KVm0zfMVm7FWy6ILYCVhZg0Acrte9Sd00fMM2OvXK',
@@ -104,6 +105,13 @@ export class StripeService {
       webhook_secret,
     );
     // console.log('event: ', event.type);
+    // const payment = await this.paymentRepository.findOne({
+    //   where: {
+    //     paymentIntentId: 'pi_3Pb2pDFpHpOCAS9x18HTrq4x',
+    //   },
+    //   relations: ['student_id', 'course_code'],
+    // });
+    // console.log('inside webhook , payment:', payment);
     switch (event.type) {
       case 'checkout.session.completed':
         // console.log('inside session.completed:');
@@ -114,7 +122,10 @@ export class StripeService {
         const payment_succeeded = event.data.object;
         const course_metadata = payment_succeeded.metadata.course_code;
         const student_metadata = payment_succeeded.metadata.student_email;
-        console.log('inside payment intent suceeded: ', payment_succeeded);
+        console.log(
+          'inside payment intent suceeded: payment intent id is:',
+          payment_succeeded.id,
+        );
         console.log('course metadata: ', course_metadata);
         console.log('student metadata: ', student_metadata);
         await this.handlePaymentIntentSucceeded(
@@ -154,9 +165,21 @@ export class StripeService {
     if (!student) {
       throw new NotFoundException('Student not found');
     }
-
+    //  const alreadySessionCreated=this.paymentRepository.findOne({
+    //   where:{
+    //     paymentIntentId:session.payment_intent.toString(),
+    //     student_id:student,
+    //     course_code:course,
+    //     status:PaymentStatus.Pending,
+    //     id:Not(id)
+    //   }
+    //  })
+    console.log(
+      'inside handle checkout session: session.payment_intent is:',
+      session.payment_intent.toString(),
+    );
     const newPayment = this.paymentRepository.create({
-      sessionId: session.id,
+      paymentIntentId: session.payment_intent.toString(),
       student_id: student,
       course_code: course,
       amount: course.price,
@@ -167,13 +190,23 @@ export class StripeService {
   }
 
   async handlePaymentIntentSucceeded(
-    session_id: string,
+    paymentIntent_id: string,
     email: string,
     course_code: string,
   ) {
-    console.log('inside handle payment intent succeeded:');
+    console.log(
+      'inside handle payment intent succeeded: paymentIntent_id is :',
+      paymentIntent_id,
+    );
+    console.log('course_code:', course_code);
+
+    console.log('email:', email);
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     const payment = await this.paymentRepository.findOne({
-      where: { sessionId: session_id },
+      where: {
+        paymentIntentId: paymentIntent_id,
+      },
+      relations: ['student_id', 'course_code'],
     });
     console.log('payment:', payment);
     if (!payment) {
@@ -182,9 +215,6 @@ export class StripeService {
     payment.status = PaymentStatus.Successful;
     await this.paymentRepository.save(payment);
 
-    console.log('course_code:', course_code);
-
-    console.log('email:', email);
     const course = await this.courseRepository.findOne({
       where: { coursecode: course_code },
     });
@@ -202,13 +232,19 @@ export class StripeService {
       status: EnrolmentStatus.active,
       created_at: new Date(),
     });
-    return this.enrolmentRepository.save(enrolment);
+    await this.enrolmentRepository.save(enrolment);
+    await this.mailService.sendEnrollmentConfirmation(
+      student.email,
+      course.coursecode,
+    );
+
+    return enrolment;
   }
 
-  async handlePaymentIntentFailed(sessionId: string) {
-    console.log('payment session id:', sessionId);
+  async handlePaymentIntentFailed(paymentIntent_id: string) {
+    console.log('payment session id:', paymentIntent_id);
     const payment = await this.paymentRepository.findOne({
-      where: { sessionId },
+      where: { paymentIntentId: paymentIntent_id },
     });
     if (!payment) {
       throw new NotFoundException('Payment Not found');

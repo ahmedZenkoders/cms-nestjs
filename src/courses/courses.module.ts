@@ -12,6 +12,7 @@ import { Payment } from 'src/payment/entities/payment';
 import { PaymentService } from 'src/payment/payment.service';
 import { StripeService } from 'src/stripe/stripe.service';
 import { Enrolment } from 'src/enrolment/entities/enrolment';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Enrolment } from 'src/enrolment/entities/enrolment';
     StudentsService,
     PaymentService,
     StripeService,
+    MailService,
   ],
   controllers: [CoursesController],
 })

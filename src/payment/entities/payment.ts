@@ -18,7 +18,7 @@ export class Payment {
   @Column()
   time: Date;
   @Column()
-  sessionId:string
+  paymentIntentId: string;
 
   @Column()
   amount: number;
