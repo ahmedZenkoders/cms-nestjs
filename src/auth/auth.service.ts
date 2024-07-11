@@ -20,10 +20,10 @@ import { LoginTeacherDto } from 'src/teachers/dto/loginTeacher.dto';
 import { Admin } from 'src/admin/entities/admin';
 import { CreateAdminDto } from 'src/admin/dto/createAdmin.dto';
 import { LoginAdminDto } from 'src/admin/dto/loginAdmin.dto';
-import { UploadService } from 'src/upload/upload.service';
 import { DomainService } from 'src/domain/domain.service';
 import { OtpService } from 'src/otp/otp.service';
 import { VerifyOtpDto } from 'src/otp/dto/verifyOtp.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -35,9 +35,10 @@ export class AuthService {
     private studentRepository: Repository<Student>,
     @InjectRepository(Admin)
     private adminRepository: Repository<Admin>,
-    private uploadservice: UploadService,
+
     private domainservice: DomainService,
     private otpservice: OtpService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async adminSignUp(createadmindto: CreateAdminDto) {
@@ -163,5 +164,13 @@ export class AuthService {
     }
 
     return { message: 'Logged in successfully', data: user };
+  }
+
+  async validateUser(userToken: string): Promise<{
+    id: number;
+    email: string;
+  }> {
+    const user = await this.jwtService.verifyAsync(userToken);
+    return user;
   }
 }

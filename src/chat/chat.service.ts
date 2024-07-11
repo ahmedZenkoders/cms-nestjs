@@ -59,6 +59,28 @@ export class ChatService {
       teacher_id: teacher,
       createdAt: new Date(Date.now()),
     });
-    return this.chatRepository.save(newChat);
+    const chat = await this.chatRepository.save(newChat);
+    return chat.id;
+  }
+
+  async canUserJoinChat(chatId: number, userId: string) {
+    let user: Student | Teacher;
+    user = await this.studentRepository.findOneBy({ email: userId });
+    if (!user) {
+      user = await this.teacherRepository.findOneBy({ email: userId });
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const chat = await this.chatRepository.findOne({
+      where: { id: chatId },
+    });
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
+    }
+    return true;
   }
 }

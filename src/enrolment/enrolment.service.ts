@@ -39,7 +39,7 @@ export class EnrolmentService {
       course_code: coursewithCode,
       student_id: studentwithId,
     });
-
+    console.log('already enrolled student:', alreadyEnrolledStudent);
     if (!studentwithId) {
       throw new BadRequestException('Student with this id doesnot exist');
     }

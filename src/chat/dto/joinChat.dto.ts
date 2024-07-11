@@ -5,8 +5,9 @@ import { IsNotEmpty } from 'class-validator';
 export class JoinChatDto {
   @IsNotEmpty()
   @IsEmail()
-  userId: string;
+  student_id: string;
 
   @IsNotEmpty()
-  chatId: number;
+  @IsEmail()
+  teacher_id: string;
 }

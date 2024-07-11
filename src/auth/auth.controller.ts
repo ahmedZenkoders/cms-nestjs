@@ -31,7 +31,7 @@ export class AuthController {
     HttpCode(HttpStatus.CREATED);
     return user;
   }
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post('studentlogin')
   async loginStudent(@Body() loginStudentdto: LoginStudentDto) {
     const user = this.authService.studentLogin(loginStudentdto);

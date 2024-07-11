@@ -10,13 +10,17 @@ import {
 import { Socket } from 'socket.io';
 import { MessageService } from 'src/messages/messages.service';
 import { CreateMessageDto } from '../messages/dto/createMessage.dto';
-import { JoinChatDto } from './dto/joinUser.dto';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from 'src/students/entities/student';
 import { Teacher } from 'src/teachers/entities/teacher';
 import { Repository } from 'typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Chat } from './entities/chat';
+import { JwtService } from '@nestjs/jwt';
+import { jwtConstant } from 'src/auth/constants';
+import { ChatService } from './chat.service';
+import { CreateChatDto } from './dto/createChat.dto';
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
@@ -27,6 +31,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private teacherRepository: Repository<Teacher>,
     @InjectRepository(Chat)
     private chatRepository: Repository<Chat>,
+    private readonly jwtService: JwtService,
+    private readonly chatService: ChatService,
   ) {}
 
   handleConnection(client: Socket) {
@@ -40,44 +46,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('joinChat')
   async handleJoinChat(
     @ConnectedSocket() client: Socket,
-    @MessageBody() joinChatDto: JoinChatDto,
+    @MessageBody() createChatDto: CreateChatDto,
   ) {
-    const chat_id = joinChatDto.chatId.toString();
-    console.log(typeof chat_id);
-    let user: Teacher | Student;
-    try {
-      user = await this.studentRepository.findOneBy({
-        email: joinChatDto.userId,
-      });
-      if (!user) {
-        user = await this.teacherRepository.findOneBy({
-          email: joinChatDto.userId,
-        });
-      }
-      if (!user) {
-        throw new NotFoundException('User Not found');
-      }
+    const userToken = client.handshake.headers.authorization.split(
+      ' ',
+    )[1] as string;
 
-      const existingChat = await this.chatRepository.findOneBy({
-        id: joinChatDto.chatId,
-      });
-      if (!existingChat) {
-        throw new BadRequestException(`Chat Not Found`);
-      }
+    const user = await this.jwtService.verify(userToken, {
+      secret: jwtConstant.secret,
+    });
+    console.log(user);
+    const requestedEmail = user.email;
+    if (
+      requestedEmail === createChatDto.studentId ||
+      requestedEmail === createChatDto.teacherId
+    ) {
+      const chatId = await this.chatService.createChat(createChatDto);
+      console.log(chatId);
 
-      client.join(chat_id);
-      console.log(`Client ${client.id} joined chat ${joinChatDto.chatId}`);
-      client
-        .to(chat_id)
-        .emit(
-          'newMessage',
-          `message: User ${joinChatDto.userId} joined the chat `,
-        );
-    } catch (error) {
-      console.error(
-        `Error joining chat ${joinChatDto.chatId}: ${error.message}`,
+      const canJoin = await this.chatService.canUserJoinChat(
+        chatId,
+        requestedEmail,
       );
+
+      if (canJoin) {
+        client.join(chatId.toString());
+        const socketId = client.id;
+        console.log(`${socketId} has joined room ${chatId}`);
+      }
     }
+    throw new UnauthorizedException('You are not authorized to join this chat');
   }
 
   @SubscribeMessage('sendMessage')
