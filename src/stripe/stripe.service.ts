@@ -41,19 +41,33 @@ export class StripeService {
     unitAmount: number,
   ) {
     try {
-      const product = await this.stripe.products.create({
-        name: 'Course Purchase',
-        metadata: {
-          course_id: courseCode,
-          studentId: studentEmail,
-        },
-      });
-      // console.log('inside stripe service (product): ', product);
-      const stripePrice = await this.stripe.prices.create({
-        currency: 'usd',
-        unit_amount: unitAmount,
-        product: product.id,
-      });
+      const stripePriceId = await this.createProductPrice(
+        courseCode,
+        unitAmount,
+      );
+
+      // let customer: Stripe.Customer;
+      // const existingCustomer = await this.stripe.customers.list({
+      //   email: studentEmail,
+      //   limit: 1,
+      // });
+
+      // const customerData = existingCustomer.data;
+
+      // if (customerData.length === 0) {
+      //   customer = await this.stristomers.create({
+      //     email: studentEmail,
+      //   });
+      // } else {
+      //   customer = customerData[0];
+      // }
+
+      // const subscription = await this.stripe.subscriptions.create({
+      //   customer: customer.id,
+      //   payment_behavior: 'default_incomplete',
+      //   items: [{ price: stripePrice.id }],
+      // });
+
       // console.log('inside stripe service (stripe price):', stripePrice);
       const session = await this.stripe.checkout.sessions.create({
         success_url: 'https://example.com/success',
@@ -62,7 +76,7 @@ export class StripeService {
 
         line_items: [
           {
-            price: stripePrice.id,
+            price: stripePriceId,
             quantity: 1,
           },
         ],
@@ -75,12 +89,58 @@ export class StripeService {
           metadata: { course_code: courseCode, student_email: studentEmail },
         },
       });
-      // console.log('inside strip service (create checkout session):', session);
       return session;
     } catch (error) {
       console.error('Error creating Stripe checkout session:', error);
       throw new Error(
         `Failed to create Stripe checkout session: ${error.message}`,
+      );
+    }
+  }
+
+  async createProductPrice(course_code: string, coursePrice: number) {
+    const stripePrice = await this.stripe.prices.create({
+      currency: 'usd',
+      unit_amount: coursePrice,
+      product_data: {
+        name: course_code,
+      },
+    });
+    return stripePrice.id;
+  }
+
+  async createSubscriptionSession() {
+    try {
+      const prod = await this.stripe.products.retrieve('prod_QSfcsNEwlzvdHi');
+      console.log('Product:', prod.id, prod.name);
+      const price = await this.stripe.prices.retrieve(
+        prod.default_price.toString(),
+      );
+      console.log('Price:', price.id, price.unit_amount);
+      const session = await this.stripe.checkout.sessions.create({
+        success_url: 'https://example.com/success',
+        cancel_url: 'https://example.com/cancel',
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: price.id,
+            quantity: 2,
+          },
+        ],
+        mode: 'subscription',
+        metadata: {
+          eventType: 'Purchase Course',
+        },
+        subscription_data: {
+          // metadata: { course_code, student_email, amount },
+        },
+      });
+
+      return session.url;
+    } catch (error) {
+      console.error('Error creating Stripe subscription session:', error);
+      throw new Error(
+        `Failed to create Stripe subscription session: ${error.message}`,
       );
     }
   }
@@ -142,6 +202,10 @@ export class StripeService {
         await this.handlePaymentIntentFailed(payment_failed);
         break;
 
+      case 'customer.subscription.created':
+        const subscription_created = event.data.object;
+        console.log('subscription created', subscription_created);
+        break;
       default:
         console.log(`Unhandled event type ${event.type}`);
     }

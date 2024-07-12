@@ -3,11 +3,11 @@ import { IsEmail } from '@nestjs/class-validator';
 import { IsNotEmpty } from 'class-validator';
 
 export class CreateChatDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'studentID cannot be empty' })
   @IsEmail()
   studentId: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'teacher id cannot be empty' })
   @IsEmail()
   teacherId: string;
 }

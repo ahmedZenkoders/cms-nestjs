@@ -48,6 +48,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() createChatDto: CreateChatDto,
   ) {
+    console.log('create chat dtos student id: ', createChatDto.studentId);
+    console.log('create chat dtos teacher id: ', createChatDto.teacherId);
     const userToken = client.handshake.headers.authorization.split(
       ' ',
     )[1] as string;
@@ -57,10 +59,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     console.log(user);
     const requestedEmail = user.email;
+    console.log('req email:', requestedEmail);
     if (
       requestedEmail === createChatDto.studentId ||
       requestedEmail === createChatDto.teacherId
     ) {
+      console.log('inside if req email body:');
       const chatId = await this.chatService.createChat(createChatDto);
       console.log(chatId);
 
